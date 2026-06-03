@@ -1,0 +1,4 @@
+NamespaceIndentation: All
+IndentCaseLabels: true
+IndentCaseBlocks: true
+FixNamespaceComments: false
