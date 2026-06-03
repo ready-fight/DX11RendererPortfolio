@@ -1,0 +1,39 @@
+add_executable(RenderSandbox WIN32
+    Runtime/Win32/Win32Entry.cpp
+
+    Engine/Core/Assert.h
+    Engine/Core/Log.h
+    Engine/Core/Log.cpp
+
+    Engine/Platform/Window.h
+    Engine/Platform/Win32Window.h
+    Engine/Platform/Win32Window.cpp
+
+    Engine/Renderer/GraphicsDevice.h
+    Engine/Renderer/GraphicsDevice.cpp
+)
+
+target_include_directories(RenderSandbox PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(RenderSandbox PRIVATE
+    d3d11
+    dxgi
+    d3dcompiler
+)
+
+target_compile_definitions(RenderSandbox PRIVATE
+    WIN32_LEAN_AND_MEAN
+    NOMINMAX
+    UNICODE
+    _UNICODE
+)
+
+if (MSVC)
+    target_compile_options(RenderSandbox PRIVATE
+        /W4
+        /permissive-
+        /Zc:__cplusplus
+    )
+endif()
