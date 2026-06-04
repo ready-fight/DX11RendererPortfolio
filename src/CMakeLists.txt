@@ -16,6 +16,8 @@ add_executable(RenderSandbox WIN32
 
     Engine/Renderer/GraphicsDevice.h
     Engine/Renderer/GraphicsDevice.cpp
+    Engine/Renderer/DxHelpers.h
+    Engine/Renderer/DxHelpers.cpp
 )
 
 target_include_directories(RenderSandbox PRIVATE
@@ -26,6 +28,7 @@ target_link_libraries(RenderSandbox PRIVATE
     d3d11
     dxgi
     d3dcompiler
+    dxguid
 )
 
 target_compile_definitions(RenderSandbox PRIVATE
