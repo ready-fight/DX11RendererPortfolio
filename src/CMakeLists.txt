@@ -1,9 +1,14 @@
 add_executable(RenderSandbox WIN32
     Runtime/Win32/Win32Entry.cpp
 
+    Engine/Application/Application.h
+    Engine/Application/Application.cpp
+
     Engine/Core/Assert.h
     Engine/Core/Log.h
     Engine/Core/Log.cpp
+    Engine/Core/Timer.h
+    Engine/Core/Timer.cpp
 
     Engine/Platform/Window.h
     Engine/Platform/Win32Window.h

@@ -69,7 +69,7 @@ namespace Engine
 
     bool Win32Window::ProcessMessages()
     {
-        MSG msg = {};
+        MSG msg = {};   
 
         while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE))
         {
