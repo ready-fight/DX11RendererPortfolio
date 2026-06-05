@@ -4,3 +4,4 @@ IndentCaseBlocks: true
 FixNamespaceComments: false
 ColumnLimit: 120
 BinPackArguments: false
+PointerAlignment: Left

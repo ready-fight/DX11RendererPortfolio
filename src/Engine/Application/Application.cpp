@@ -55,9 +55,9 @@ namespace Engine {
   void Application::Tick(float deltaSeconds) { (void)deltaSeconds; }
 
   void Application::Render() {
-    m_graphicsDevice.BeginFrame(0.05f, 0.08f, 0.12f, 1.0f);
+    m_graphicsDevice.BeginFrame(1.0f, 1.0f, 1.0f, 1.0f);
 
-    m_trianglePass.Render(m_graphicsDevice);
+    m_trianglePass.Render(m_graphicsDevice, m_timer.GetTotalSeconds());
 
     m_graphicsDevice.EndFrame();
   }

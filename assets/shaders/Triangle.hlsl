@@ -1,3 +1,8 @@
+cbuffer TransformConstants : register(b0)
+{
+    row_major float4x4 gWorldViewProjection;
+};
+
 struct VSInput
 {
     float3 position : POSITION;
@@ -13,7 +18,7 @@ struct VSOutput
 VSOutput VSMain(VSInput input)
 {
     VSOutput output;
-    output.position = float4(input.position, 1.0f);
+    output.position = mul(float4(input.position, 1.0f), gWorldViewProjection);
     output.color = input.color;
     return output;
 }
