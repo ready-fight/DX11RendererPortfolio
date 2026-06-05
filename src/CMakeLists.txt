@@ -18,6 +18,13 @@ add_executable(RenderSandbox WIN32
     Engine/Renderer/GraphicsDevice.cpp
     Engine/Renderer/DxHelpers.h
     Engine/Renderer/DxHelpers.cpp
+    Engine/Renderer/VertexTypes.h
+    Engine/Renderer/ShaderProgram.h
+    Engine/Renderer/ShaderProgram.cpp
+    Engine/Renderer/GpuBuffer.h
+    Engine/Renderer/GpuBuffer.cpp
+    Engine/Renderer/TrianglePass.h
+    Engine/Renderer/TrianglePass.cpp
 )
 
 target_include_directories(RenderSandbox PRIVATE

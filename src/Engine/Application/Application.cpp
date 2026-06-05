@@ -14,11 +14,13 @@ namespace Engine {
       return false;
     }
 
-    if (!m_graphicsDevice.Initialize(m_window.GetNativeHandle(),
-                                     m_window.GetWidth(),
-                                     m_window.GetHeight())) {
-      MessageBoxW(nullptr, L"Failed to initialize DirectX 11.", L"Error",
-                  MB_OK);
+    if (!m_graphicsDevice.Initialize(m_window.GetNativeHandle(), m_window.GetWidth(), m_window.GetHeight())) {
+      MessageBoxW(nullptr, L"Failed to initialize DirectX 11.", L"Error", MB_OK);
+      return false;
+    }
+
+    if (!m_trianglePass.Initialize(m_graphicsDevice)) {
+      MessageBoxW(nullptr, L"Failed to initialize triangle pass.", L"Error", MB_OK);
       return false;
     }
 
@@ -27,6 +29,7 @@ namespace Engine {
   }
 
   void Application::Shutdown() {
+    m_trianglePass.Shutdown();
     m_graphicsDevice.Shutdown();
     m_window.Destroy();
     m_isRunning = false;
@@ -53,6 +56,9 @@ namespace Engine {
 
   void Application::Render() {
     m_graphicsDevice.BeginFrame(0.05f, 0.08f, 0.12f, 1.0f);
+
+    m_trianglePass.Render(m_graphicsDevice);
+
     m_graphicsDevice.EndFrame();
   }
 }
