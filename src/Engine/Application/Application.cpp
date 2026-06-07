@@ -57,7 +57,7 @@ namespace Engine {
   void Application::Render() {
     m_graphicsDevice.BeginFrame(1.0f, 1.0f, 1.0f, 1.0f);
 
-    m_trianglePass.Render(m_graphicsDevice, m_timer.GetTotalSeconds());
+    m_trianglePass.Render(m_graphicsDevice, m_camera, m_timer.GetTotalSeconds());
 
     m_graphicsDevice.EndFrame();
   }

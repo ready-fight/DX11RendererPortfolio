@@ -7,8 +7,6 @@
 #include <cstddef>
 #include <iterator>
 
-#include <iostream>
-#include <string>
 
 namespace Engine {
 
@@ -65,12 +63,14 @@ namespace Engine {
     m_shader.Shutdown();
   }
 
-  void TrianglePass::Render(GraphicsDevice& graphicsDevice, float totalSeconds) {
+  void TrianglePass::Render(GraphicsDevice& graphicsDevice, const Camera& camera, float totalSeconds) {
 
-    const DirectX::XMMATRIX rotation = DirectX::XMMatrixRotationZ(totalSeconds);
+    const DirectX::XMMATRIX world = DirectX::XMMatrixRotationZ(totalSeconds);
+    const DirectX::XMMATRIX viewProjection = camera.GetViewProjectionMatrix();
+    const DirectX::XMMATRIX worldViewProjection = world * viewProjection;
 
     TransformConstants constants = {};
-    DirectX::XMStoreFloat4x4(&constants.worldViewProjection, rotation);
+    DirectX::XMStoreFloat4x4(&constants.worldViewProjection, worldViewProjection);
 
     m_transformBuffer.Update(graphicsDevice, &constants, sizeof(constants));
 

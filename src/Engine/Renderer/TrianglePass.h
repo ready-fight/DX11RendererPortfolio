@@ -1,3 +1,4 @@
+#include "Engine/Renderer/Camera.h"
 #include "Engine/Renderer/GpuBuffer.h"
 #include "Engine/Renderer/ShaderProgram.h"
 
@@ -9,7 +10,7 @@ namespace Engine {
     bool Initialize(GraphicsDevice& graphicsDevice);
     void Shutdown();
 
-    void Render(GraphicsDevice& graphicsDevice, float totalSeconds);
+    void Render(GraphicsDevice& graphicsDevice, const Camera& camera, float totalSeconds);
 
   private:
     ShaderProgram m_shader;

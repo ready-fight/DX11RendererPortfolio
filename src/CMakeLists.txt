@@ -19,6 +19,8 @@ add_executable(RenderSandbox WIN32
     Engine/Renderer/DxHelpers.h
     Engine/Renderer/DxHelpers.cpp
     Engine/Renderer/VertexTypes.h
+    Engine/Renderer/Camera.h
+    Engine/Renderer/Camera.cpp
     Engine/Renderer/ShaderProgram.h
     Engine/Renderer/ShaderProgram.cpp
     Engine/Renderer/GpuBuffer.h
