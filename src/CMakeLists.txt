@@ -27,6 +27,10 @@ add_executable(RenderSandbox WIN32
     Engine/Renderer/GpuBuffer.cpp
     Engine/Renderer/TrianglePass.h
     Engine/Renderer/TrianglePass.cpp
+    Engine/Renderer/MeshPass.h
+    Engine/Renderer/MeshPass.cpp
+    Engine/Renderer/RenderStates.h
+    Engine/Renderer/RenderStates.cpp
 )
 
 target_include_directories(RenderSandbox PRIVATE

@@ -34,6 +34,32 @@ namespace Engine {
     return true;
   }
 
+  bool GpuBuffer::CreateIndexBuffer(GraphicsDevice& graphicsDevice, const uint32_t* indices, uint32_t count) {
+    m_stride = sizeof(uint32_t);
+    m_count = count;
+    m_byteSize = m_stride * count;
+
+    D3D11_BUFFER_DESC bufferDesc = {};
+    bufferDesc.ByteWidth = m_byteSize;
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
+    bufferDesc.MiscFlags = 0;
+    bufferDesc.StructureByteStride = m_stride;
+
+    D3D11_SUBRESOURCE_DATA initialData = {};
+    initialData.pSysMem = indices;
+
+    HRESULT hr = graphicsDevice.GetDevice()->CreateBuffer(&bufferDesc, &initialData, m_buffer.GetAddressOf());
+
+    if (!DX_CHECK(hr)) {
+      return false;
+    }
+
+    LogInfo("Index buffer created.");
+    return true;
+  }
+
   bool GpuBuffer::CreateConstantBuffer(GraphicsDevice& graphicsDevice, uint32_t byteSize) {
     ENGINE_ASSERT(byteSize % 16 == 0, "Constant buffer size must be 16-byte aligned.");
 
@@ -72,6 +98,10 @@ namespace Engine {
     ID3D11Buffer* buffers[] = {m_buffer.Get()};
 
     graphicsDevice.GetContext()->IASetVertexBuffers(0, 1, buffers, &stride, &offset);
+  }
+
+  void GpuBuffer::BindIndexBuffer(GraphicsDevice& graphicsDevice) {
+    graphicsDevice.GetContext()->IASetIndexBuffer(m_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
   }
 
   void GpuBuffer::BindConstantBufferVS(GraphicsDevice& graphicsDevice, uint32_t slot) {
