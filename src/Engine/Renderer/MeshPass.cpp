@@ -1,6 +1,7 @@
 #include "Engine/Renderer/MeshPass.h"
 
 #include "Engine/Renderer/GraphicsDevice.h"
+#include "Engine/Renderer/MeshFactory.h"
 #include "Engine/Renderer/VertexTypes.h"
 
 #include <DirectXMath.h>
@@ -39,28 +40,7 @@ namespace Engine {
       return false;
     }
 
-    const VertexPositionColor vertices[] = {{{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-                                            {{-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-                                            {{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}},
-                                            {{0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 0.0f}},
-
-                                            {{-0.5f, -0.5f, 0.5f}, {1.0f, 0.0f, 1.0f}},
-                                            {{-0.5f, 0.5f, 0.5f}, {0.0f, 1.0f, 1.0f}},
-                                            {{0.5f, 0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}},
-                                            {{0.5f, -0.5f, 0.5f}, {0.3f, 0.3f, 0.3f}}};
-
-    const uint32_t indices[] = {0, 1, 2, 0, 2, 3, 4, 6, 5, 4, 7, 6,
-
-                                4, 5, 1, 4, 1, 0, 3, 2, 6, 3, 6, 7,
-
-                                1, 5, 6, 1, 6, 2, 4, 0, 3, 4, 3, 7};
-
-    if (!m_vertexBuffer.CreateVertexBuffer(
-            graphicsDevice, vertices, sizeof(VertexPositionColor), static_cast<uint32_t>(std::size(vertices)))) {
-      return false;
-    }
-
-    if (!m_indexBuffer.CreateIndexBuffer(graphicsDevice, indices, static_cast<uint32_t>(std::size(indices)))) {
+    if (!MeshFactory::CreateCube(graphicsDevice, m_cubeMesh)) {
       return false;
     }
 
@@ -73,8 +53,7 @@ namespace Engine {
 
   void MeshPass::Shutdown() {
     m_transformBuffer.Shutdown();
-    m_indexBuffer.Shutdown();
-    m_vertexBuffer.Shutdown();
+    m_cubeMesh.Shutdown();
     m_shader.Shutdown();
   }
 
@@ -94,12 +73,11 @@ namespace Engine {
     ID3D11DeviceContext* context = graphicsDevice.GetContext();
 
     m_shader.Bind(graphicsDevice);
-    m_vertexBuffer.BindVertexBuffer(graphicsDevice);
-    m_indexBuffer.BindIndexBuffer(graphicsDevice);
+    m_cubeMesh.Bind(graphicsDevice);
     m_transformBuffer.BindConstantBufferVS(graphicsDevice, 0);
 
     context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    context->DrawIndexed(m_indexBuffer.GetCount(), 0, 0);
+    m_cubeMesh.Draw(graphicsDevice);
   }
 }

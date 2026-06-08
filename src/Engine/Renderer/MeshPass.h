@@ -1,5 +1,8 @@
+#pragma once
+
 #include "Engine/Renderer/Camera.h"
 #include "Engine/Renderer/GpuBuffer.h"
+#include "Engine/Renderer/Mesh.h"
 #include "Engine/Renderer/ShaderProgram.h"
 
 namespace Engine
@@ -16,8 +19,7 @@ namespace Engine
 
     private:
         ShaderProgram m_shader;
-        GpuBuffer m_vertexBuffer;
-        GpuBuffer m_indexBuffer;
+        Mesh m_cubeMesh;
         GpuBuffer m_transformBuffer;
     };
 }

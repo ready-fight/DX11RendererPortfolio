@@ -31,6 +31,10 @@ add_executable(RenderSandbox WIN32
     Engine/Renderer/MeshPass.cpp
     Engine/Renderer/RenderStates.h
     Engine/Renderer/RenderStates.cpp
+    Engine/Renderer/Mesh.h
+    Engine/Renderer/Mesh.cpp
+    Engine/Renderer/MeshFactory.h
+    Engine/Renderer/MeshFactory.cpp
 )
 
 target_include_directories(RenderSandbox PRIVATE
