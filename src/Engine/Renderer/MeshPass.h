@@ -4,6 +4,9 @@
 #include "Engine/Renderer/GpuBuffer.h"
 #include "Engine/Renderer/Mesh.h"
 #include "Engine/Renderer/ShaderProgram.h"
+#include "Engine/Scene/SceneObject.h"
+
+#include <vector>
 
 namespace Engine
 {
@@ -21,5 +24,7 @@ namespace Engine
         ShaderProgram m_shader;
         Mesh m_cubeMesh;
         GpuBuffer m_transformBuffer;
+
+        std::vector<SceneObject> m_sceneObjects;
     };
 }

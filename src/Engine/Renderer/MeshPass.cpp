@@ -48,10 +48,34 @@ namespace Engine {
       return false;
     }
 
+    SceneObject leftCube = {};
+    leftCube.mesh = &m_cubeMesh;
+    leftCube.transform.position = {-1.5f, 0.0f, 0.0f};
+    leftCube.transform.scale = {0.75f, 0.75f, 0.75f};
+    leftCube.rotationSpeed = 0.75f;
+    m_sceneObjects.push_back(leftCube);
+
+    SceneObject centerCube = {};
+    centerCube.mesh = &m_cubeMesh;
+    centerCube.transform.position = {0.0f, 0.0f, 0.0f};
+    centerCube.transform.scale = {1.0f, 1.0f, 1.0f};
+    centerCube.rotationSpeed = 1.25f;
+    m_sceneObjects.push_back(centerCube);
+
+    SceneObject rightCube = {};
+    rightCube.mesh = &m_cubeMesh;
+    rightCube.transform.position = {1.5f, 0.0f, 0.0f};
+    rightCube.transform.scale = {0.5f, 0.5f, 0.5f};
+    rightCube.rotationSpeed = 2.0f;
+    m_sceneObjects.push_back(rightCube);
+
     return true;
   }
 
   void MeshPass::Shutdown() {
+
+    m_sceneObjects.clear();
+
     m_transformBuffer.Shutdown();
     m_cubeMesh.Shutdown();
     m_shader.Shutdown();
@@ -60,24 +84,33 @@ namespace Engine {
   void MeshPass::Render(GraphicsDevice& graphicsDevice, const Camera& camera, float totalSeconds) {
     using namespace DirectX;
 
-    const XMMATRIX world = XMMatrixRotationX(totalSeconds * 0.5f) * XMMatrixRotationY(totalSeconds);
-
     const XMMATRIX viewProjection = camera.GetViewProjectionMatrix();
-    const XMMATRIX worldViewProjection = world * viewProjection;
-
-    TransformConstants constants = {};
-    XMStoreFloat4x4(&constants.worldViewProjection, worldViewProjection);
-
-    m_transformBuffer.Update(graphicsDevice, &constants, sizeof(constants));
 
     ID3D11DeviceContext* context = graphicsDevice.GetContext();
 
     m_shader.Bind(graphicsDevice);
-    m_cubeMesh.Bind(graphicsDevice);
     m_transformBuffer.BindConstantBufferVS(graphicsDevice, 0);
 
     context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    m_cubeMesh.Draw(graphicsDevice);
+    for (SceneObject& object : m_sceneObjects) {
+      if (!object.mesh) {
+        continue;
+      }
+
+      object.transform.rotationRadians.x = totalSeconds * object.rotationSpeed * 0.5f;
+      object.transform.rotationRadians.y = totalSeconds * object.rotationSpeed;
+
+      const XMMATRIX world = object.transform.GetWorldMatrix();
+      const XMMATRIX worldViewProjection = world * viewProjection;
+
+      TransformConstants constants = {};
+      XMStoreFloat4x4(&constants.worldViewProjection, worldViewProjection);
+
+      m_transformBuffer.Update(graphicsDevice, &constants, sizeof(constants));
+
+      object.mesh->Bind(graphicsDevice);
+      object.mesh->Draw(graphicsDevice);
+    }
   }
 }
