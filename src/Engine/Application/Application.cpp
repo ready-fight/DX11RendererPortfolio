@@ -31,7 +31,7 @@ namespace Engine {
     }
 
     if (!m_meshPass.Initialize(m_graphicsDevice)) {
-      MessageBoxW(nullptr, L"Failed to initialize triangle pass.", L"Error", MB_OK);
+      MessageBoxW(nullptr, L"Failed to initialize mesh pass.", L"Error", MB_OK);
       return false;
     }
 

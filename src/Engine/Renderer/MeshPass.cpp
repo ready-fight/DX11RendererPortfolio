@@ -11,6 +11,7 @@
 namespace Engine {
   namespace {
     struct TransformConstants {
+      DirectX::XMFLOAT4X4 world;
       DirectX::XMFLOAT4X4 worldViewProjection;
     };
 
@@ -18,8 +19,16 @@ namespace Engine {
       DirectX::XMFLOAT4 baseColor;
     };
 
+    struct LightConstants {
+      DirectX::XMFLOAT4 lightDirection;
+      DirectX::XMFLOAT4 lightColor;
+      DirectX::XMFLOAT4 ambientColor;
+    };
+
     static_assert(sizeof(TransformConstants) % 16 == 0);
     static_assert(sizeof(MaterialConstants) % 16 == 0);
+    static_assert(sizeof(LightConstants) % 16 == 0);
+
   }
 
   bool MeshPass::Initialize(GraphicsDevice& graphicsDevice) {
@@ -35,6 +44,13 @@ namespace Engine {
                                                  DXGI_FORMAT_R32G32B32_FLOAT,
                                                  0,
                                                  static_cast<UINT>(offsetof(VertexPositionColor, color)),
+                                                 D3D11_INPUT_PER_VERTEX_DATA,
+                                                 0},
+                                                {"NORMAL",
+                                                 0,
+                                                 DXGI_FORMAT_R32G32B32_FLOAT,
+                                                 0,
+                                                 static_cast<UINT>(offsetof(VertexPositionColor, normal)),
                                                  D3D11_INPUT_PER_VERTEX_DATA,
                                                  0}};
 
@@ -54,6 +70,10 @@ namespace Engine {
     }
 
     if (!m_materialBuffer.CreateConstantBuffer(graphicsDevice, sizeof(MaterialConstants))) {
+      return false;
+    }
+
+    if (!m_lightBuffer.CreateConstantBuffer(graphicsDevice, sizeof(LightConstants))) {
       return false;
     }
 
@@ -91,6 +111,7 @@ namespace Engine {
 
     m_sceneObjects.clear();
 
+    m_lightBuffer.Shutdown();
     m_materialBuffer.Shutdown();
     m_transformBuffer.Shutdown();
     m_cubeMesh.Shutdown();
@@ -108,6 +129,13 @@ namespace Engine {
 
     context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+    LightConstants lightConstants = {};
+    lightConstants.lightDirection = {-0.4f, -1.0f, 0.3f, 0.0f};
+    lightConstants.lightColor = {0.9f, 0.9f, 0.85f, 1.0f};
+    lightConstants.ambientColor = {0.18f, 0.18f, 0.22f, 1.0f};
+
+    m_lightBuffer.Update(graphicsDevice, &lightConstants, sizeof(lightConstants));
+
     for (SceneObject& object : m_sceneObjects) {
       if (!object.mesh || !object.material) {
         continue;
@@ -120,6 +148,7 @@ namespace Engine {
       const XMMATRIX worldViewProjection = world * viewProjection;
 
       TransformConstants constants = {};
+      XMStoreFloat4x4(&constants.world, world);
       XMStoreFloat4x4(&constants.worldViewProjection, worldViewProjection);
 
       m_transformBuffer.Update(graphicsDevice, &constants, sizeof(constants));
@@ -132,6 +161,7 @@ namespace Engine {
       object.material->Bind(graphicsDevice);
       m_transformBuffer.BindConstantBufferVS(graphicsDevice, 0);
       m_materialBuffer.BindConstantBufferPS(graphicsDevice, 1);
+      m_lightBuffer.BindConstantBufferPS(graphicsDevice, 2);
 
       object.mesh->Bind(graphicsDevice);
       object.mesh->Draw(graphicsDevice);

@@ -25,6 +25,7 @@ namespace Engine
         Mesh m_cubeMesh;
         GpuBuffer m_transformBuffer;
         GpuBuffer m_materialBuffer;
+        GpuBuffer m_lightBuffer;
 
         std::vector<SceneObject> m_sceneObjects;
     };
