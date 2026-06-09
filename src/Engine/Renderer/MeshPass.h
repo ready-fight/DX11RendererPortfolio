@@ -24,6 +24,7 @@ namespace Engine
         Material m_colorMaterial;
         Mesh m_cubeMesh;
         GpuBuffer m_transformBuffer;
+        GpuBuffer m_materialBuffer;
 
         std::vector<SceneObject> m_sceneObjects;
     };

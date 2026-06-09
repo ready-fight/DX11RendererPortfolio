@@ -3,6 +3,11 @@ cbuffer TransformConstants : register(b0)
     row_major float4x4 gWorldViewProjection;
 };
 
+cbuffer MaterialConstants : register(b1)
+{
+    float4 gBaseColor;
+};
+
 struct VSInput
 {
     float3 position : POSITION;
@@ -25,5 +30,5 @@ VSOutput VSMain(VSInput input)
 
 float4 PSMain(VSOutput input) : SV_TARGET
 {
-    return float4(input.color, 1.0f);
+    return float4(input.color * gBaseColor.rgb, gBaseColor.a);
 }

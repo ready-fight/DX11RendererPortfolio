@@ -21,6 +21,7 @@ namespace Engine {
     void BindVertexBuffer(GraphicsDevice &graphicsDevice);
     void BindIndexBuffer(GraphicsDevice &graphicsDevice);
     void BindConstantBufferVS(GraphicsDevice &graphicsDevice, uint32_t slot);
+    void BindConstantBufferPS(GraphicsDevice& graphicsDevice, uint32_t slot);
 
     void Update(GraphicsDevice &graphicsDevice, const void *data, uint32_t byteSize);
 

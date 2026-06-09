@@ -14,7 +14,12 @@ namespace Engine {
       DirectX::XMFLOAT4X4 worldViewProjection;
     };
 
+    struct MaterialConstants {
+      DirectX::XMFLOAT4 baseColor;
+    };
+
     static_assert(sizeof(TransformConstants) % 16 == 0);
+    static_assert(sizeof(MaterialConstants) % 16 == 0);
   }
 
   bool MeshPass::Initialize(GraphicsDevice& graphicsDevice) {
@@ -48,11 +53,16 @@ namespace Engine {
       return false;
     }
 
+    if (!m_materialBuffer.CreateConstantBuffer(graphicsDevice, sizeof(MaterialConstants))) {
+      return false;
+    }
+
     SceneObject leftCube = {};
     leftCube.mesh = &m_cubeMesh;
     leftCube.material = &m_colorMaterial;
     leftCube.transform.position = {-1.5f, 0.0f, 0.0f};
     leftCube.transform.scale = {0.75f, 0.75f, 0.75f};
+    leftCube.baseColor = {1.0f, 0.35f, 0.35f, 1.0f};
     leftCube.rotationSpeed = 0.75f;
     m_sceneObjects.push_back(leftCube);
 
@@ -61,6 +71,7 @@ namespace Engine {
     centerCube.material = &m_colorMaterial;
     centerCube.transform.position = {0.0f, 0.0f, 0.0f};
     centerCube.transform.scale = {1.0f, 1.0f, 1.0f};
+    centerCube.baseColor = {0.35f, 1.0f, 0.35f, 1.0f};
     centerCube.rotationSpeed = 1.25f;
     m_sceneObjects.push_back(centerCube);
 
@@ -69,6 +80,7 @@ namespace Engine {
     rightCube.material = &m_colorMaterial;
     rightCube.transform.position = {1.5f, 0.0f, 0.0f};
     rightCube.transform.scale = {0.5f, 0.5f, 0.5f};
+    rightCube.baseColor = {0.35f, 0.55f, 1.0f, 1.0f};
     rightCube.rotationSpeed = 2.0f;
     m_sceneObjects.push_back(rightCube);
 
@@ -79,6 +91,7 @@ namespace Engine {
 
     m_sceneObjects.clear();
 
+    m_materialBuffer.Shutdown();
     m_transformBuffer.Shutdown();
     m_cubeMesh.Shutdown();
     m_colorMaterial.Shutdown();
@@ -111,8 +124,14 @@ namespace Engine {
 
       m_transformBuffer.Update(graphicsDevice, &constants, sizeof(constants));
 
+      MaterialConstants materialConstants = {};
+      materialConstants.baseColor = object.baseColor;
+
+      m_materialBuffer.Update(graphicsDevice, &materialConstants, sizeof(materialConstants));
+
       object.material->Bind(graphicsDevice);
       m_transformBuffer.BindConstantBufferVS(graphicsDevice, 0);
+      m_materialBuffer.BindConstantBufferPS(graphicsDevice, 1);
 
       object.mesh->Bind(graphicsDevice);
       object.mesh->Draw(graphicsDevice);

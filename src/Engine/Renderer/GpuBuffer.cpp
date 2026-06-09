@@ -110,6 +110,12 @@ namespace Engine {
     graphicsDevice.GetContext()->VSSetConstantBuffers(slot, 1, buffers);
   }
 
+  void GpuBuffer::BindConstantBufferPS(GraphicsDevice& graphicsDevice, uint32_t slot) {
+    ID3D11Buffer* buffers[] = {m_buffer.Get()};
+
+    graphicsDevice.GetContext()->PSSetConstantBuffers(slot, 1, buffers);
+  }
+
   void GpuBuffer::Update(GraphicsDevice& graphicsDevice, const void* data, uint32_t byteSize) {
     ENGINE_ASSERT(byteSize <= m_byteSize, "GpuBuffer::Update byteSize is too large.");
 
