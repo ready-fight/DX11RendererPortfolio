@@ -33,10 +33,10 @@ namespace Engine {
                                                  D3D11_INPUT_PER_VERTEX_DATA,
                                                  0}};
 
-    if (!m_shader.Initialize(graphicsDevice,
-                             L"assets/shaders/Color.hlsl",
-                             inputElements,
-                             static_cast<unsigned int>(std::size(inputElements)))) {
+    if (!m_colorMaterial.Initialize(graphicsDevice,
+                                    L"assets/shaders/Color.hlsl",
+                                    inputElements,
+                                    static_cast<unsigned int>(std::size(inputElements)))) {
       return false;
     }
 
@@ -50,6 +50,7 @@ namespace Engine {
 
     SceneObject leftCube = {};
     leftCube.mesh = &m_cubeMesh;
+    leftCube.material = &m_colorMaterial;
     leftCube.transform.position = {-1.5f, 0.0f, 0.0f};
     leftCube.transform.scale = {0.75f, 0.75f, 0.75f};
     leftCube.rotationSpeed = 0.75f;
@@ -57,6 +58,7 @@ namespace Engine {
 
     SceneObject centerCube = {};
     centerCube.mesh = &m_cubeMesh;
+    centerCube.material = &m_colorMaterial;
     centerCube.transform.position = {0.0f, 0.0f, 0.0f};
     centerCube.transform.scale = {1.0f, 1.0f, 1.0f};
     centerCube.rotationSpeed = 1.25f;
@@ -64,6 +66,7 @@ namespace Engine {
 
     SceneObject rightCube = {};
     rightCube.mesh = &m_cubeMesh;
+    rightCube.material = &m_colorMaterial;
     rightCube.transform.position = {1.5f, 0.0f, 0.0f};
     rightCube.transform.scale = {0.5f, 0.5f, 0.5f};
     rightCube.rotationSpeed = 2.0f;
@@ -78,7 +81,7 @@ namespace Engine {
 
     m_transformBuffer.Shutdown();
     m_cubeMesh.Shutdown();
-    m_shader.Shutdown();
+    m_colorMaterial.Shutdown();
   }
 
   void MeshPass::Render(GraphicsDevice& graphicsDevice, const Camera& camera, float totalSeconds) {
@@ -88,13 +91,12 @@ namespace Engine {
 
     ID3D11DeviceContext* context = graphicsDevice.GetContext();
 
-    m_shader.Bind(graphicsDevice);
     m_transformBuffer.BindConstantBufferVS(graphicsDevice, 0);
 
     context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     for (SceneObject& object : m_sceneObjects) {
-      if (!object.mesh) {
+      if (!object.mesh || !object.material) {
         continue;
       }
 
@@ -108,6 +110,9 @@ namespace Engine {
       XMStoreFloat4x4(&constants.worldViewProjection, worldViewProjection);
 
       m_transformBuffer.Update(graphicsDevice, &constants, sizeof(constants));
+
+      object.material->Bind(graphicsDevice);
+      m_transformBuffer.BindConstantBufferVS(graphicsDevice, 0);
 
       object.mesh->Bind(graphicsDevice);
       object.mesh->Draw(graphicsDevice);

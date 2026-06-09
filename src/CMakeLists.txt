@@ -37,6 +37,8 @@ add_executable(RenderSandbox WIN32
     Engine/Renderer/MeshFactory.cpp
     Engine/Scene/Transform.h
     Engine/Scene/SceneObject.h
+    Engine/Renderer/Material.h
+    Engine/Renderer/Material.cpp
 )
 
 target_include_directories(RenderSandbox PRIVATE

@@ -3,7 +3,7 @@
 #include "Engine/Renderer/Camera.h"
 #include "Engine/Renderer/GpuBuffer.h"
 #include "Engine/Renderer/Mesh.h"
-#include "Engine/Renderer/ShaderProgram.h"
+#include "Engine/Renderer/Material.h"
 #include "Engine/Scene/SceneObject.h"
 
 #include <vector>
@@ -21,7 +21,7 @@ namespace Engine
         void Render(GraphicsDevice& graphicsDevice, const Camera& camera, float totalSeconds);
 
     private:
-        ShaderProgram m_shader;
+        Material m_colorMaterial;
         Mesh m_cubeMesh;
         GpuBuffer m_transformBuffer;
 
