@@ -17,8 +17,8 @@ namespace Engine {
 
     const float aspectRatio = static_cast<float>(m_window.GetWidth()) / static_cast<float>(m_window.GetHeight());
 
-    m_camera.SetPosition(0.0f, 0.0f, -2.5f);
     m_camera.SetTarget(0.0f, 0.0f, 0.0f);
+    m_camera.SetOrbit(0.0f, 0.15f, 4.5f);
     m_camera.SetPerspective(DirectX::XMConvertToRadians(60.0f), aspectRatio, 0.1f, 100.0f);
 
     if (!m_graphicsDevice.Initialize(m_window.GetNativeHandle(), m_window.GetWidth(), m_window.GetHeight())) {
@@ -79,6 +79,33 @@ namespace Engine {
     }
 
     m_f1WasDown = f1Down;
+
+    const float orbitSpeed = 1.5f * deltaSeconds;
+    const float zoomSpeed = 3.0f * deltaSeconds;
+
+    if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
+      m_camera.AddOrbit(-orbitSpeed, 0.0f);
+    }
+
+    if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
+      m_camera.AddOrbit(orbitSpeed, 0.0f);
+    }
+
+    if (GetAsyncKeyState(VK_UP) & 0x8000) {
+      m_camera.AddOrbit(0.0f, orbitSpeed);
+    }
+
+    if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
+      m_camera.AddOrbit(0.0f, -orbitSpeed);
+    }
+
+    if (GetAsyncKeyState('Q') & 0x8000) {
+      m_camera.AddDistance(-zoomSpeed);
+    }
+
+    if (GetAsyncKeyState('E') & 0x8000) {
+      m_camera.AddDistance(zoomSpeed);
+    }
   }
 
   void Application::Render() {
