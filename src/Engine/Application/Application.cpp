@@ -26,6 +26,17 @@ namespace Engine {
       return false;
     }
 
+    if (!m_sceneRenderTarget.InitializeColor(
+            m_graphicsDevice, m_window.GetWidth(), m_window.GetHeight(), DXGI_FORMAT_R8G8B8A8_UNORM)) {
+      MessageBoxW(nullptr, L"Failed to initialize scene render target.", L"Error", MB_OK);
+      return false;
+    }
+
+    if (!m_fullscreenPass.Initialize(m_graphicsDevice)) {
+      MessageBoxW(nullptr, L"Failed to initialize fullscreen pass.", L"Error", MB_OK);
+      return false;
+    }
+
     if (!m_renderStates.Initialize(m_graphicsDevice)) {
       return false;
     }
@@ -41,6 +52,8 @@ namespace Engine {
 
   void Application::Shutdown() {
     m_meshPass.Shutdown();
+    m_fullscreenPass.Shutdown();
+    m_sceneRenderTarget.Shutdown();
     m_renderStates.Shutdown();
     m_graphicsDevice.Shutdown();
     m_window.Destroy();
@@ -109,12 +122,23 @@ namespace Engine {
   }
 
   void Application::Render() {
+    m_graphicsDevice.SetRenderTarget(m_sceneRenderTarget, &m_graphicsDevice.GetDepthStencilBuffer());
 
-    m_graphicsDevice.BeginFrame(0.0f, 0.0f, 0.0f, 0.0f);
+    m_graphicsDevice.ClearRenderTarget(m_sceneRenderTarget, 0.05f, 0.08f, 0.12f, 1.0f);
+
+    m_graphicsDevice.ClearDepthStencil(m_graphicsDevice.GetDepthStencilBuffer());
 
     m_renderStates.Apply(m_graphicsDevice, m_wireframeEnabled);
 
     m_meshPass.Render(m_graphicsDevice, m_camera, m_timer.GetTotalSeconds());
+
+    m_graphicsDevice.SetBackBufferRenderTarget();
+
+    m_graphicsDevice.ClearRenderTarget(m_graphicsDevice.GetBackBufferRenderTarget(), 0.0f, 0.0f, 0.0f, 1.0f);
+
+    m_renderStates.Apply(m_graphicsDevice, false);
+
+    m_fullscreenPass.Render(m_graphicsDevice, m_sceneRenderTarget);
 
     m_graphicsDevice.EndFrame();
   }

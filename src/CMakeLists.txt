@@ -45,6 +45,8 @@ add_executable(RenderSandbox WIN32
     Engine/Renderer/RenderTarget.cpp
     Engine/Renderer/DepthStencilBuffer.h
     Engine/Renderer/DepthStencilBuffer.cpp
+    Engine/Renderer/FullscreenPass.h
+    Engine/Renderer/FullscreenPass.cpp
 )
 
 target_include_directories(RenderSandbox PRIVATE

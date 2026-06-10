@@ -8,8 +8,8 @@
 
 namespace Engine {
   namespace {
-    Microsoft::WRL::ComPtr<ID3DBlob> CompileShader(const wchar_t *shaderPath, const char *entryPoint,
-                                                   const char *target) {
+    Microsoft::WRL::ComPtr<ID3DBlob> CompileShader(const wchar_t* shaderPath, const char* entryPoint,
+                                                   const char* target) {
       UINT compileFlags = D3DCOMPILE_ENABLE_STRICTNESS;
 
 #if defined(_DEBUG)
@@ -31,7 +31,7 @@ namespace Engine {
 
       if (FAILED(hr)) {
         if (errorBlob) {
-          LogError(static_cast<const char *>(errorBlob->GetBufferPointer()));
+          LogError(static_cast<const char*>(errorBlob->GetBufferPointer()));
         }
 
         DX_CHECK(hr);
@@ -42,8 +42,8 @@ namespace Engine {
     }
   }
 
-  bool ShaderProgram::Initialize(GraphicsDevice &graphicsDevice, const wchar_t *shaderPath,
-                                 const D3D11_INPUT_ELEMENT_DESC *inputElements, unsigned int inputElementCount) {
+  bool ShaderProgram::Initialize(GraphicsDevice& graphicsDevice, const wchar_t* shaderPath,
+                                 const D3D11_INPUT_ELEMENT_DESC* inputElements, unsigned int inputElementCount) {
     Microsoft::WRL::ComPtr<ID3DBlob> vertexShaderBlob = CompileShader(shaderPath, "VSMain", "vs_5_0");
 
     if (!vertexShaderBlob) {
@@ -72,11 +72,19 @@ namespace Engine {
       return false;
     }
 
-    hr = graphicsDevice.GetDevice()->CreateInputLayout(inputElements,
-                                                       inputElementCount,
-                                                       vertexShaderBlob->GetBufferPointer(),
-                                                       vertexShaderBlob->GetBufferSize(),
-                                                       m_inputLayout.GetAddressOf());
+    if (inputElements && inputElementCount > 0) {
+      hr = graphicsDevice.GetDevice()->CreateInputLayout(inputElements,
+                                                         inputElementCount,
+                                                         vertexShaderBlob->GetBufferPointer(),
+                                                         vertexShaderBlob->GetBufferSize(),
+                                                         m_inputLayout.GetAddressOf());
+
+      if (!DX_CHECK(hr)) {
+        return false;
+      }
+    } else {
+      m_inputLayout.Reset();
+    }
 
     if (!DX_CHECK(hr)) {
       return false;
@@ -92,8 +100,8 @@ namespace Engine {
     m_vertexShader.Reset();
   }
 
-  void ShaderProgram::Bind(GraphicsDevice &graphicsDevice) {
-    ID3D11DeviceContext *context = graphicsDevice.GetContext();
+  void ShaderProgram::Bind(GraphicsDevice& graphicsDevice) {
+    ID3D11DeviceContext* context = graphicsDevice.GetContext();
 
     context->IASetInputLayout(m_inputLayout.Get());
     context->VSSetShader(m_vertexShader.Get(), nullptr, 0);

@@ -22,6 +22,15 @@ namespace Engine {
     ID3D11DeviceContext* GetContext() const { return m_context.Get(); }
     IDXGISwapChain* GetSwapChain() const { return m_swapChain.Get(); }
 
+    RenderTarget& GetBackBufferRenderTarget() { return m_backBufferRenderTarget; }
+    DepthStencilBuffer& GetDepthStencilBuffer() { return m_depthStencilBuffer; }
+
+    void SetRenderTarget(RenderTarget& renderTarget, DepthStencilBuffer* depthStencilBuffer);
+    void SetBackBufferRenderTarget();
+
+    void ClearRenderTarget(RenderTarget& renderTarget, float r, float g, float b, float a);
+    void ClearDepthStencil(DepthStencilBuffer& depthStencilBuffer);
+
   private:
     void ReportLiveObjects();
 
@@ -29,7 +38,7 @@ namespace Engine {
     Microsoft::WRL::ComPtr<ID3D11Device> m_device;
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_context;
     Microsoft::WRL::ComPtr<IDXGISwapChain> m_swapChain;
-    
+
     RenderTarget m_backBufferRenderTarget;
     DepthStencilBuffer m_depthStencilBuffer;
 

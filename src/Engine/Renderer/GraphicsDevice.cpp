@@ -106,6 +106,26 @@ namespace Engine {
     return true;
   }
 
+  void GraphicsDevice::SetRenderTarget(RenderTarget& renderTarget, DepthStencilBuffer* depthStencilBuffer) {
+    ID3D11RenderTargetView* renderTargets[] = {renderTarget.GetRenderTargetView()};
+
+    m_context->OMSetRenderTargets(
+        1, renderTargets, depthStencilBuffer ? depthStencilBuffer->GetDepthStencilView() : nullptr);
+  }
+
+  void GraphicsDevice::SetBackBufferRenderTarget() { SetRenderTarget(m_backBufferRenderTarget, nullptr); }
+
+  void GraphicsDevice::ClearRenderTarget(RenderTarget& renderTarget, float r, float g, float b, float a) {
+    const float clearColor[] = {r, g, b, a};
+
+    m_context->ClearRenderTargetView(renderTarget.GetRenderTargetView(), clearColor);
+  }
+
+  void GraphicsDevice::ClearDepthStencil(DepthStencilBuffer& depthStencilBuffer) {
+    m_context->ClearDepthStencilView(
+        depthStencilBuffer.GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+  }
+
   void GraphicsDevice::Shutdown() {
     if (m_context) {
       m_context->ClearState();
@@ -114,7 +134,7 @@ namespace Engine {
 
     m_depthStencilBuffer.Shutdown();
     m_backBufferRenderTarget.Shutdown();
-    
+
     m_swapChain.Reset();
     m_context.Reset();
     m_device.Reset();
@@ -123,16 +143,9 @@ namespace Engine {
   }
 
   void GraphicsDevice::BeginFrame(float r, float g, float b, float a) {
-    const float clearColor[] = {r, g, b, a};
-
-    ID3D11RenderTargetView* renderTargets[] = {m_backBufferRenderTarget.GetRenderTargetView()};
-
-    m_context->OMSetRenderTargets(1, renderTargets, m_depthStencilBuffer.GetDepthStencilView());
-
-    m_context->ClearRenderTargetView(m_backBufferRenderTarget.GetRenderTargetView(), clearColor);
-
-    m_context->ClearDepthStencilView(
-        m_depthStencilBuffer.GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+    SetRenderTarget(m_backBufferRenderTarget, &m_depthStencilBuffer);
+    ClearRenderTarget(m_backBufferRenderTarget, r, g, b, a);
+    ClearDepthStencil(m_depthStencilBuffer);
   }
 
   void GraphicsDevice::EndFrame() { DX_CHECK(m_swapChain->Present(1, 0)); }
