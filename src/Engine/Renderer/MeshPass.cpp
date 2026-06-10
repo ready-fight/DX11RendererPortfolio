@@ -52,6 +52,13 @@ namespace Engine {
                                                  0,
                                                  static_cast<UINT>(offsetof(VertexPositionColor, normal)),
                                                  D3D11_INPUT_PER_VERTEX_DATA,
+                                                 0},
+                                                {"TEXCOORD",
+                                                 0,
+                                                 DXGI_FORMAT_R32G32_FLOAT,
+                                                 0,
+                                                 static_cast<UINT>(offsetof(VertexPositionColor, texcoord)),
+                                                 D3D11_INPUT_PER_VERTEX_DATA,
                                                  0}};
 
     if (!m_colorMaterial.Initialize(graphicsDevice,
@@ -62,6 +69,10 @@ namespace Engine {
     }
 
     if (!MeshFactory::CreateCube(graphicsDevice, m_cubeMesh)) {
+      return false;
+    }
+
+    if (!m_checkerTexture.CreateCheckerboard(graphicsDevice, 64, 64)) {
       return false;
     }
 
@@ -114,6 +125,9 @@ namespace Engine {
     m_lightBuffer.Shutdown();
     m_materialBuffer.Shutdown();
     m_transformBuffer.Shutdown();
+
+    m_checkerTexture.Shutdown();
+
     m_cubeMesh.Shutdown();
     m_colorMaterial.Shutdown();
   }
@@ -162,6 +176,8 @@ namespace Engine {
       m_transformBuffer.BindConstantBufferVS(graphicsDevice, 0);
       m_materialBuffer.BindConstantBufferPS(graphicsDevice, 1);
       m_lightBuffer.BindConstantBufferPS(graphicsDevice, 2);
+
+      m_checkerTexture.BindPS(graphicsDevice, 0, 0);
 
       object.mesh->Bind(graphicsDevice);
       object.mesh->Draw(graphicsDevice);

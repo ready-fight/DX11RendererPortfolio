@@ -39,6 +39,8 @@ add_executable(RenderSandbox WIN32
     Engine/Scene/SceneObject.h
     Engine/Renderer/Material.h
     Engine/Renderer/Material.cpp
+    Engine/Renderer/Texture2D.h
+    Engine/Renderer/Texture2D.cpp
 )
 
 target_include_directories(RenderSandbox PRIVATE
