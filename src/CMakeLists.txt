@@ -41,6 +41,10 @@ add_executable(RenderSandbox WIN32
     Engine/Renderer/Material.cpp
     Engine/Renderer/Texture2D.h
     Engine/Renderer/Texture2D.cpp
+    Engine/Renderer/RenderTarget.h
+    Engine/Renderer/RenderTarget.cpp
+    Engine/Renderer/DepthStencilBuffer.h
+    Engine/Renderer/DepthStencilBuffer.cpp
 )
 
 target_include_directories(RenderSandbox PRIVATE

@@ -6,6 +6,9 @@
 
 #include <cstdint>
 
+#include "Engine/Renderer/DepthStencilBuffer.h"
+#include "Engine/Renderer/RenderTarget.h"
+
 namespace Engine {
   class GraphicsDevice final {
   public:
@@ -17,6 +20,7 @@ namespace Engine {
 
     ID3D11Device* GetDevice() const { return m_device.Get(); }
     ID3D11DeviceContext* GetContext() const { return m_context.Get(); }
+    IDXGISwapChain* GetSwapChain() const { return m_swapChain.Get(); }
 
   private:
     void ReportLiveObjects();
@@ -25,9 +29,9 @@ namespace Engine {
     Microsoft::WRL::ComPtr<ID3D11Device> m_device;
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_context;
     Microsoft::WRL::ComPtr<IDXGISwapChain> m_swapChain;
-    Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_backBufferRTV;
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depthStencilBuffer;
-    Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depthStencilView;
+    
+    RenderTarget m_backBufferRenderTarget;
+    DepthStencilBuffer m_depthStencilBuffer;
 
     bool m_debugLayerEnabled = false;
   };

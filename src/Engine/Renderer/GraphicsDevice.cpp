@@ -83,42 +83,11 @@ namespace Engine {
     }
 #endif
 
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
-
-    hr = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(backBuffer.GetAddressOf()));
-
-    if (!DX_CHECK(hr)) {
+    if (!m_backBufferRenderTarget.InitializeFromBackBuffer(*this)) {
       return false;
     }
 
-    hr = m_device->CreateRenderTargetView(backBuffer.Get(), nullptr, m_backBufferRTV.GetAddressOf());
-
-    if (!DX_CHECK(hr)) {
-      return false;
-    }
-
-    D3D11_TEXTURE2D_DESC depthDesc = {};
-    depthDesc.Width = width;
-    depthDesc.Height = height;
-    depthDesc.ArraySize = 1;
-    depthDesc.MipLevels = 1;
-    depthDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-    depthDesc.SampleDesc.Count = 1;
-    depthDesc.SampleDesc.Quality = 0;
-    depthDesc.Usage = D3D11_USAGE_DEFAULT;
-    depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-    depthDesc.CPUAccessFlags = 0;
-    depthDesc.MiscFlags = 0;
-
-    hr = m_device->CreateTexture2D(&depthDesc, nullptr, m_depthStencilBuffer.GetAddressOf());
-
-    if (!DX_CHECK(hr)) {
-      return false;
-    }
-
-    hr = m_device->CreateDepthStencilView(m_depthStencilBuffer.Get(), nullptr, m_depthStencilView.GetAddressOf());
-
-    if (!DX_CHECK(hr)) {
+    if (!m_depthStencilBuffer.Initialize(*this, width, height)) {
       return false;
     }
 
@@ -143,9 +112,9 @@ namespace Engine {
       m_context->Flush();
     }
 
-    m_depthStencilView.Reset();
-    m_depthStencilBuffer.Reset();
-    m_backBufferRTV.Reset();
+    m_depthStencilBuffer.Shutdown();
+    m_backBufferRenderTarget.Shutdown();
+    
     m_swapChain.Reset();
     m_context.Reset();
     m_device.Reset();
@@ -156,13 +125,14 @@ namespace Engine {
   void GraphicsDevice::BeginFrame(float r, float g, float b, float a) {
     const float clearColor[] = {r, g, b, a};
 
-    ID3D11RenderTargetView* renderTargets[] = {m_backBufferRTV.Get()};
+    ID3D11RenderTargetView* renderTargets[] = {m_backBufferRenderTarget.GetRenderTargetView()};
 
-    m_context->OMSetRenderTargets(1, renderTargets, m_depthStencilView.Get());
+    m_context->OMSetRenderTargets(1, renderTargets, m_depthStencilBuffer.GetDepthStencilView());
 
-    m_context->ClearRenderTargetView(m_backBufferRTV.Get(), clearColor);
+    m_context->ClearRenderTargetView(m_backBufferRenderTarget.GetRenderTargetView(), clearColor);
 
-    m_context->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+    m_context->ClearDepthStencilView(
+        m_depthStencilBuffer.GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
   }
 
   void GraphicsDevice::EndFrame() { DX_CHECK(m_swapChain->Present(1, 0)); }
