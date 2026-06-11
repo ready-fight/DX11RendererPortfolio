@@ -93,6 +93,20 @@ namespace Engine {
 
     m_f1WasDown = f1Down;
 
+    const bool f2Down = (GetAsyncKeyState(VK_F2) & 0x8000) != 0;
+
+    if (f2Down && !m_f2WasDown) {
+      m_grayscaleEnabled = !m_grayscaleEnabled;
+
+      if (m_grayscaleEnabled) {
+        LogInfo("Grayscale post effect enabled.");
+      } else {
+        LogInfo("Grayscale post effect disabled.");
+      }
+    }
+
+    m_f2WasDown = f2Down;
+
     const float orbitSpeed = 1.5f * deltaSeconds;
     const float zoomSpeed = 3.0f * deltaSeconds;
 
@@ -138,7 +152,7 @@ namespace Engine {
 
     m_renderStates.Apply(m_graphicsDevice, false);
 
-    m_fullscreenPass.Render(m_graphicsDevice, m_sceneRenderTarget);
+    m_fullscreenPass.Render(m_graphicsDevice, m_sceneRenderTarget, m_grayscaleEnabled);
 
     m_graphicsDevice.EndFrame();
   }

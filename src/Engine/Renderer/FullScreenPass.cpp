@@ -4,9 +4,22 @@
 #include "Engine/Renderer/GraphicsDevice.h"
 #include "Engine/Renderer/RenderTarget.h"
 
+#include <DirectXMath.h>
+
 namespace Engine {
+
+  struct PostProcessConstants {
+    DirectX::XMFLOAT4 settings;
+  };
+
+  static_assert(sizeof(PostProcessConstants) % 16 == 0);
+
   bool FullscreenPass::Initialize(GraphicsDevice& graphicsDevice) {
     if (!m_shader.Initialize(graphicsDevice, L"assets/shaders/FullscreenCopy.hlsl", nullptr, 0)) {
+      return false;
+    }
+
+    if (!m_postProcessBuffer.CreateConstantBuffer(graphicsDevice, sizeof(PostProcessConstants))) {
       return false;
     }
 
@@ -29,10 +42,17 @@ namespace Engine {
     m_shader.Shutdown();
   }
 
-  void FullscreenPass::Render(GraphicsDevice& graphicsDevice, RenderTarget& sourceTexture) {
+  void FullscreenPass::Render(GraphicsDevice& graphicsDevice, RenderTarget& sourceTexture, bool grayscaleEnabled) {
     ID3D11DeviceContext* context = graphicsDevice.GetContext();
 
+    PostProcessConstants constants = {};
+    constants.settings =
+        grayscaleEnabled ? DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.0f) : DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+
+    m_postProcessBuffer.Update(graphicsDevice, &constants, sizeof(constants));
+
     m_shader.Bind(graphicsDevice);
+    m_postProcessBuffer.BindConstantBufferPS(graphicsDevice, 0);
 
     ID3D11ShaderResourceView* shaderResources[] = {sourceTexture.GetShaderResourceView()};
 

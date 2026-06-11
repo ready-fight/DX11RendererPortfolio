@@ -37,5 +37,7 @@ namespace Engine {
     bool m_isRunning = false;
     bool m_wireframeEnabled = false;
     bool m_f1WasDown = false;
+    bool m_grayscaleEnabled = false;
+    bool m_f2WasDown = false;
   };
 }
