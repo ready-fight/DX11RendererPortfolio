@@ -9,6 +9,11 @@
 #include "Engine/Renderer/RenderStates.h"
 #include "Engine/Renderer/RenderTarget.h"
 
+#include "Engine/Input/KeyboardInput.h"
+#include "Engine/Renderer/DebugSettings.h"
+
+#include "Engine/Renderer/DebugOverlay.h"
+
 namespace Engine {
   class Application final {
   public:
@@ -28,18 +33,15 @@ namespace Engine {
 
     RenderTarget m_sceneRenderTarget;
     FullscreenPass m_fullscreenPass;
+    DebugOverlay m_debugOverlay;
     PostProcessSettings m_postProcessSettings;
+    KeyboardInput m_keyboardInput;
+    DebugSettings m_debugSettings;
 
     MeshPass m_meshPass;
     Camera m_camera;
     Timer m_timer;
 
     bool m_isRunning = false;
-    bool m_wireframeEnabled = false;
-    bool m_f1WasDown = false;
-    bool m_grayscaleEnabled = false;
-    bool m_f2WasDown = false;
-    bool m_vignetteEnabled = false;
-    bool m_f3WasDown = false;
   };
 }

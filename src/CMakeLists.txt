@@ -48,13 +48,35 @@ add_executable(RenderSandbox WIN32
     Engine/Renderer/FullscreenPass.h
     Engine/Renderer/FullscreenPass.cpp
     Engine/Renderer/PostProcessSettings.h
+    Engine/Input/KeyboardInput.h
+    Engine/Input/KeyboardInput.cpp
+    Engine/Renderer/DebugSettings.h
+    Engine/Renderer/DebugOverlay.h
+    Engine/Renderer/DebugOverlay.cpp
 )
 
 target_include_directories(RenderSandbox PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/external/imgui)
+
+add_library(imgui STATIC
+    ${IMGUI_DIR}/imgui.cpp
+    ${IMGUI_DIR}/imgui_draw.cpp
+    ${IMGUI_DIR}/imgui_tables.cpp
+    ${IMGUI_DIR}/imgui_widgets.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_win32.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_dx11.cpp
+)
+
+target_include_directories(imgui PUBLIC
+    ${IMGUI_DIR}
+    ${IMGUI_DIR}/backends
+)
+
 target_link_libraries(RenderSandbox PRIVATE
+    imgui
     d3d11
     dxgi
     d3dcompiler

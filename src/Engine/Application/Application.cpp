@@ -39,6 +39,11 @@ namespace Engine {
       return false;
     }
 
+    if (!m_debugOverlay.Initialize(m_window.GetNativeHandle(), m_graphicsDevice)) {
+      MessageBoxW(nullptr, L"Failed to initialize debug overlay.", L"Error", MB_OK);
+      return false;
+    }
+
     if (!m_renderStates.Initialize(m_graphicsDevice)) {
       return false;
     }
@@ -60,6 +65,7 @@ namespace Engine {
 
   void Application::Shutdown() {
     m_meshPass.Shutdown();
+    m_debugOverlay.Shutdown();
     m_fullscreenPass.Shutdown();
     m_sceneRenderTarget.Shutdown();
     m_renderStates.Shutdown();
@@ -87,77 +93,57 @@ namespace Engine {
 
   void Application::Tick(float deltaSeconds) {
     (void)deltaSeconds;
-    const bool f1Down = (GetAsyncKeyState(VK_F1) & 0x8000) != 0;
 
-    if (f1Down && !m_f1WasDown) {
-      m_wireframeEnabled = !m_wireframeEnabled;
+    m_keyboardInput.Update();
 
-      if (m_wireframeEnabled) {
-        LogInfo("Wireframe mode enabled.");
-      } else {
-        LogInfo("Wireframe mode disabled.");
-      }
+    if (m_keyboardInput.WasPressed(VK_F1)) {
+      m_debugSettings.wireframeEnabled = !m_debugSettings.wireframeEnabled;
+
+      LogInfo(m_debugSettings.wireframeEnabled ? "Wireframe mode enabled." : "Wireframe mode disabled.");
     }
 
-    m_f1WasDown = f1Down;
+    if (m_keyboardInput.WasPressed(VK_F2)) {
+      m_debugSettings.grayscaleEnabled = !m_debugSettings.grayscaleEnabled;
 
-    const bool f2Down = (GetAsyncKeyState(VK_F2) & 0x8000) != 0;
-
-    if (f2Down && !m_f2WasDown) {
-      m_grayscaleEnabled = !m_grayscaleEnabled;
-
-      if (m_grayscaleEnabled) {
-        LogInfo("Grayscale post effect enabled.");
-      } else {
-        LogInfo("Grayscale post effect disabled.");
-      }
+      LogInfo(m_debugSettings.grayscaleEnabled ? "Grayscale post effect enabled." : "Grayscale post effect disabled.");
     }
 
-    m_f2WasDown = f2Down;
+    if (m_keyboardInput.WasPressed(VK_F3)) {
+      m_debugSettings.vignetteEnabled = !m_debugSettings.vignetteEnabled;
 
-    const bool f3Down = (GetAsyncKeyState(VK_F3) & 0x8000) != 0;
-
-    if (f3Down && !m_f3WasDown) {
-      m_vignetteEnabled = !m_vignetteEnabled;
-
-      if (m_vignetteEnabled) {
-        LogInfo("Vignette post effect enabled.");
-      } else {
-        LogInfo("Vignette post effect disabled.");
-      }
+      LogInfo(m_debugSettings.vignetteEnabled ? "Vignette post effect enabled." : "Vignette post effect disabled.");
     }
-
-    m_f3WasDown = f3Down;
-
-    m_postProcessSettings.grayscaleAmount = m_grayscaleEnabled ? 1.0f : 0.0f;
-    m_postProcessSettings.vignetteAmount = m_vignetteEnabled ? 1.0f : 0.0f;
 
     const float orbitSpeed = 1.5f * deltaSeconds;
     const float zoomSpeed = 3.0f * deltaSeconds;
 
-    if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
+    if (m_keyboardInput.IsDown(VK_LEFT)) {
       m_camera.AddOrbit(-orbitSpeed, 0.0f);
     }
 
-    if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
+    if (m_keyboardInput.IsDown(VK_RIGHT)) {
       m_camera.AddOrbit(orbitSpeed, 0.0f);
     }
 
-    if (GetAsyncKeyState(VK_UP) & 0x8000) {
+    if (m_keyboardInput.IsDown(VK_UP)) {
       m_camera.AddOrbit(0.0f, orbitSpeed);
     }
 
-    if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
+    if (m_keyboardInput.IsDown(VK_DOWN)) {
       m_camera.AddOrbit(0.0f, -orbitSpeed);
     }
 
-    if (GetAsyncKeyState('Q') & 0x8000) {
+    if (m_keyboardInput.IsDown('Q')) {
       m_camera.AddDistance(-zoomSpeed);
     }
 
-    if (GetAsyncKeyState('E') & 0x8000) {
+    if (m_keyboardInput.IsDown('E')) {
       m_camera.AddDistance(zoomSpeed);
     }
+
+    m_postProcessSettings.grayscaleAmount = m_debugSettings.grayscaleEnabled ? 1.0f : 0.0f;
+
+    m_postProcessSettings.vignetteAmount = m_debugSettings.vignetteEnabled ? 1.0f : 0.0f;
   }
 
   void Application::Render() {
@@ -167,7 +153,7 @@ namespace Engine {
 
     m_graphicsDevice.ClearDepthStencil(m_graphicsDevice.GetDepthStencilBuffer());
 
-    m_renderStates.Apply(m_graphicsDevice, m_wireframeEnabled);
+    m_renderStates.Apply(m_graphicsDevice, m_debugSettings.wireframeEnabled);
 
     m_meshPass.Render(m_graphicsDevice, m_camera, m_timer.GetTotalSeconds());
 
@@ -178,6 +164,12 @@ namespace Engine {
     m_renderStates.Apply(m_graphicsDevice, false);
 
     m_fullscreenPass.Render(m_graphicsDevice, m_sceneRenderTarget, m_postProcessSettings);
+
+    m_debugOverlay.BeginFrame();
+
+    m_debugOverlay.Draw(m_debugSettings, m_postProcessSettings);
+
+    m_debugOverlay.EndFrame();
 
     m_graphicsDevice.EndFrame();
   }
