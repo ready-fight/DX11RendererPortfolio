@@ -42,12 +42,13 @@ namespace Engine {
     m_shader.Shutdown();
   }
 
-  void FullscreenPass::Render(GraphicsDevice& graphicsDevice, RenderTarget& sourceTexture, bool grayscaleEnabled) {
+  void FullscreenPass::Render(GraphicsDevice& graphicsDevice, RenderTarget& sourceTexture,
+                              const PostProcessSettings& settings) {
     ID3D11DeviceContext* context = graphicsDevice.GetContext();
 
     PostProcessConstants constants = {};
     constants.settings =
-        grayscaleEnabled ? DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.0f) : DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+        DirectX::XMFLOAT4(settings.grayscaleAmount, settings.exposure, settings.contrast, settings.vignetteAmount);
 
     m_postProcessBuffer.Update(graphicsDevice, &constants, sizeof(constants));
 

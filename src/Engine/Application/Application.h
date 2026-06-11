@@ -9,7 +9,6 @@
 #include "Engine/Renderer/RenderStates.h"
 #include "Engine/Renderer/RenderTarget.h"
 
-
 namespace Engine {
   class Application final {
   public:
@@ -29,6 +28,7 @@ namespace Engine {
 
     RenderTarget m_sceneRenderTarget;
     FullscreenPass m_fullscreenPass;
+    PostProcessSettings m_postProcessSettings;
 
     MeshPass m_meshPass;
     Camera m_camera;
@@ -39,5 +39,7 @@ namespace Engine {
     bool m_f1WasDown = false;
     bool m_grayscaleEnabled = false;
     bool m_f2WasDown = false;
+    bool m_vignetteEnabled = false;
+    bool m_f3WasDown = false;
   };
 }

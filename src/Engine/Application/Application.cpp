@@ -1,10 +1,12 @@
 #include "Engine/Application/Application.h"
 #include "Engine/Core/Log.h"
+#include "Engine/Renderer/PostProcessSettings.h"
 
 #include <Windows.h>
 
 namespace Engine {
   bool Application::Initialize() {
+
     WindowDesc windowDesc = {};
     windowDesc.title = L"DX11 Renderer Portfolio";
     windowDesc.width = 1280;
@@ -47,6 +49,12 @@ namespace Engine {
     }
 
     m_isRunning = true;
+
+    m_postProcessSettings.grayscaleAmount = 0.0f;
+    m_postProcessSettings.exposure = 1.0f;
+    m_postProcessSettings.contrast = 1.0f;
+    m_postProcessSettings.vignetteAmount = 0.0f;
+
     return true;
   }
 
@@ -107,6 +115,23 @@ namespace Engine {
 
     m_f2WasDown = f2Down;
 
+    const bool f3Down = (GetAsyncKeyState(VK_F3) & 0x8000) != 0;
+
+    if (f3Down && !m_f3WasDown) {
+      m_vignetteEnabled = !m_vignetteEnabled;
+
+      if (m_vignetteEnabled) {
+        LogInfo("Vignette post effect enabled.");
+      } else {
+        LogInfo("Vignette post effect disabled.");
+      }
+    }
+
+    m_f3WasDown = f3Down;
+
+    m_postProcessSettings.grayscaleAmount = m_grayscaleEnabled ? 1.0f : 0.0f;
+    m_postProcessSettings.vignetteAmount = m_vignetteEnabled ? 1.0f : 0.0f;
+
     const float orbitSpeed = 1.5f * deltaSeconds;
     const float zoomSpeed = 3.0f * deltaSeconds;
 
@@ -152,7 +177,7 @@ namespace Engine {
 
     m_renderStates.Apply(m_graphicsDevice, false);
 
-    m_fullscreenPass.Render(m_graphicsDevice, m_sceneRenderTarget, m_grayscaleEnabled);
+    m_fullscreenPass.Render(m_graphicsDevice, m_sceneRenderTarget, m_postProcessSettings);
 
     m_graphicsDevice.EndFrame();
   }

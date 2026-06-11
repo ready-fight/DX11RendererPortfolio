@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Engine/Renderer/GpuBuffer.h"
+#include "Engine/Renderer/PostProcessSettings.h"
 #include "Engine/Renderer/ShaderProgram.h"
+
 
 #include <d3d11.h>
 #include <wrl/client.h>
@@ -15,7 +17,7 @@ namespace Engine {
     bool Initialize(GraphicsDevice& graphicsDevice);
     void Shutdown();
 
-    void Render(GraphicsDevice& graphicsDevice, RenderTarget& sourceTexture, bool grayscaleEnabled);
+    void Render(GraphicsDevice& graphicsDevice, RenderTarget& sourceTexture, const PostProcessSettings& settings);
 
   private:
     ShaderProgram m_shader;
