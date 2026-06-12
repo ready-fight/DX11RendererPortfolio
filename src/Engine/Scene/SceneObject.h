@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/Renderer/RenderResourceHandles.h"
 #include "Engine/Scene/Transform.h"
 
 #include <DirectXMath.h>
@@ -13,8 +14,8 @@ namespace Engine {
 
     std::string name;
 
-    Mesh* mesh = nullptr;
-    Material* material = nullptr;
+    MeshHandle mesh;
+    MaterialHandle material;
 
     Transform transform;
 

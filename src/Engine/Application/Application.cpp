@@ -184,8 +184,8 @@ namespace Engine {
 
     SceneObject leftCube = {};
     leftCube.name = "Left Cube";
-    leftCube.mesh = &m_meshPass.GetCubeMesh();
-    leftCube.material = &m_meshPass.GetColorMaterial();
+    leftCube.mesh = m_meshPass.GetCubeMeshHandle();
+    leftCube.material = m_meshPass.GetColorMaterialHandle();
     leftCube.transform.position = {-1.5f, 0.0f, 0.0f};
     leftCube.transform.scale = {0.75f, 0.75f, 0.75f};
     leftCube.baseColor = {1.0f, 0.35f, 0.35f, 1.0f};
@@ -194,8 +194,8 @@ namespace Engine {
 
     SceneObject centerCube = {};
     centerCube.name = "Center Cube";
-    centerCube.mesh = &m_meshPass.GetCubeMesh();
-    centerCube.material = &m_meshPass.GetColorMaterial();
+    centerCube.mesh = m_meshPass.GetCubeMeshHandle();
+    centerCube.material = m_meshPass.GetColorMaterialHandle();
     centerCube.transform.position = {0.0f, 0.0f, 0.0f};
     centerCube.transform.scale = {1.0f, 1.0f, 1.0f};
     centerCube.baseColor = {0.35f, 1.0f, 0.35f, 1.0f};
@@ -204,8 +204,8 @@ namespace Engine {
 
     SceneObject rightCube = {};
     rightCube.name = "Right Cube";
-    rightCube.mesh = &m_meshPass.GetCubeMesh();
-    rightCube.material = &m_meshPass.GetColorMaterial();
+    rightCube.mesh = m_meshPass.GetCubeMeshHandle();
+    rightCube.material = m_meshPass.GetColorMaterialHandle();
     rightCube.transform.position = {1.5f, 0.0f, 0.0f};
     rightCube.transform.scale = {0.5f, 0.5f, 0.5f};
     rightCube.baseColor = {0.35f, 0.55f, 1.0f, 1.0f};

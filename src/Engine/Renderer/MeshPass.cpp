@@ -123,7 +123,11 @@ namespace Engine {
     m_lightBuffer.Update(graphicsDevice, &lightConstants, sizeof(lightConstants));
 
     for (SceneObject& object : scene.GetObjects()) {
-      if (!object.enabled || !object.mesh || !object.material) {
+
+      Mesh* mesh = ResolveMesh(object.mesh);
+      Material* material = ResolveMaterial(object.material);
+
+      if (!object.enabled || !mesh || !material) {
         continue;
       }
 
@@ -144,16 +148,40 @@ namespace Engine {
 
       m_materialBuffer.Update(graphicsDevice, &materialConstants, sizeof(materialConstants));
 
-      object.material->Bind(graphicsDevice);
+      material->Bind(graphicsDevice);
       m_transformBuffer.BindConstantBufferVS(graphicsDevice, 0);
       m_materialBuffer.BindConstantBufferPS(graphicsDevice, 1);
       m_lightBuffer.BindConstantBufferPS(graphicsDevice, 2);
 
       m_checkerTexture.BindPS(graphicsDevice, 0, 0);
 
-      object.mesh->Bind(graphicsDevice);
-      object.mesh->Draw(graphicsDevice);
+      mesh->Bind(graphicsDevice);
+      mesh->Draw(graphicsDevice);
       graphicsDevice.AddVisibleObject();
     }
+  }
+
+  Mesh* MeshPass::ResolveMesh(MeshHandle handle) {
+    if (!handle.IsValid()) {
+      return nullptr;
+    }
+
+    if (handle.value == 0) {
+      return &m_cubeMesh;
+    }
+
+    return nullptr;
+  }
+
+  Material* MeshPass::ResolveMaterial(MaterialHandle handle) {
+    if (!handle.IsValid()) {
+      return nullptr;
+    }
+
+    if (handle.value == 0) {
+      return &m_colorMaterial;
+    }
+
+    return nullptr;
   }
 }
