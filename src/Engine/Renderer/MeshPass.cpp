@@ -9,6 +9,8 @@
 #include <cstddef>
 #include <iterator>
 
+#include <memory>
+
 namespace Engine {
   namespace {
     struct TransformConstants {
@@ -62,16 +64,24 @@ namespace Engine {
                                                  D3D11_INPUT_PER_VERTEX_DATA,
                                                  0}};
 
-    if (!m_colorMaterial.Initialize(graphicsDevice,
-                                    L"assets/shaders/Color.hlsl",
-                                    inputElements,
-                                    static_cast<unsigned int>(std::size(inputElements)))) {
+    auto colorMaterial = std::make_unique<Material>();
+
+    if (!colorMaterial->Initialize(graphicsDevice,
+                                   L"assets/shaders/Color.hlsl",
+                                   inputElements,
+                                   static_cast<unsigned int>(std::size(inputElements)))) {
       return false;
     }
 
-    if (!MeshFactory::CreateCube(graphicsDevice, m_cubeMesh)) {
+    m_colorMaterialHandle = AddMaterial(std::move(colorMaterial));
+
+    auto cubeMesh = std::make_unique<Mesh>();
+
+    if (!MeshFactory::CreateCube(graphicsDevice, *cubeMesh)) {
       return false;
     }
+
+    m_cubeMeshHandle = AddMesh(std::move(cubeMesh));
 
     if (!m_checkerTexture.CreateCheckerboard(graphicsDevice, 64, 64)) {
       return false;
@@ -100,8 +110,23 @@ namespace Engine {
 
     m_checkerTexture.Shutdown();
 
-    m_cubeMesh.Shutdown();
-    m_colorMaterial.Shutdown();
+    for (std::unique_ptr<Mesh>& mesh : m_meshes) {
+      if (mesh) {
+        mesh->Shutdown();
+      }
+    }
+
+    for (std::unique_ptr<Material>& material : m_materials) {
+      if (material) {
+        material->Shutdown();
+      }
+    }
+
+    m_meshes.clear();
+    m_materials.clear();
+
+    m_cubeMeshHandle = {};
+    m_colorMaterialHandle = {};
   }
 
   void MeshPass::Render(GraphicsDevice& graphicsDevice, const Camera& camera, Scene& scene, float totalSeconds) {
@@ -157,31 +182,36 @@ namespace Engine {
 
       mesh->Bind(graphicsDevice);
       mesh->Draw(graphicsDevice);
+      
       graphicsDevice.AddVisibleObject();
     }
   }
 
+  MeshHandle MeshPass::AddMesh(std::unique_ptr<Mesh> mesh) {
+    const uint32_t index = static_cast<uint32_t>(m_meshes.size());
+    m_meshes.push_back(std::move(mesh));
+    return MeshHandle{index};
+  }
+
+  MaterialHandle MeshPass::AddMaterial(std::unique_ptr<Material> material) {
+    const uint32_t index = static_cast<uint32_t>(m_materials.size());
+    m_materials.push_back(std::move(material));
+    return MaterialHandle{index};
+  }
+
   Mesh* MeshPass::ResolveMesh(MeshHandle handle) {
-    if (!handle.IsValid()) {
+    if (!handle.IsValid() || handle.value >= m_meshes.size()) {
       return nullptr;
     }
 
-    if (handle.value == 0) {
-      return &m_cubeMesh;
-    }
-
-    return nullptr;
+    return m_meshes[handle.value].get();
   }
 
   Material* MeshPass::ResolveMaterial(MaterialHandle handle) {
-    if (!handle.IsValid()) {
+    if (!handle.IsValid() || handle.value >= m_materials.size()) {
       return nullptr;
     }
 
-    if (handle.value == 0) {
-      return &m_colorMaterial;
-    }
-
-    return nullptr;
+    return m_materials[handle.value].get();
   }
 }

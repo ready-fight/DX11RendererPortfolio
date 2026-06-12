@@ -7,6 +7,9 @@
 #include "Engine/Renderer/RenderResourceHandles.h"
 #include "Engine/Renderer/Texture2D.h"
 
+#include <memory>
+#include <vector>
+
 namespace Engine {
   class GraphicsDevice;
   class Scene;
@@ -18,16 +21,23 @@ namespace Engine {
 
     void Render(GraphicsDevice& graphicsDevice, const Camera& camera, Scene& scene, float totalSeconds);
 
-    MeshHandle GetCubeMeshHandle() const { return MeshHandle{0}; }
-    MaterialHandle GetColorMaterialHandle() const { return MaterialHandle{0}; }
+    MeshHandle GetCubeMeshHandle() const { return m_cubeMeshHandle; }
+    MaterialHandle GetColorMaterialHandle() const { return m_colorMaterialHandle; }
 
   private:
+    MeshHandle AddMesh(std::unique_ptr<Mesh> mesh);
+    MaterialHandle AddMaterial(std::unique_ptr<Material> material);
+
     Mesh* ResolveMesh(MeshHandle handle);
     Material* ResolveMaterial(MaterialHandle handle);
 
   private:
-    Material m_colorMaterial;
-    Mesh m_cubeMesh;
+    std::vector<std::unique_ptr<Mesh>> m_meshes;
+    std::vector<std::unique_ptr<Material>> m_materials;
+
+    MeshHandle m_cubeMeshHandle;
+    MaterialHandle m_colorMaterialHandle;
+
     Texture2D m_checkerTexture;
 
     GpuBuffer m_transformBuffer;
