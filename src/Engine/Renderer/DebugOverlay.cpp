@@ -43,11 +43,20 @@ namespace Engine {
     ImGui::NewFrame();
   }
 
-  void DebugOverlay::Draw(DebugSettings& debugSettings, PostProcessSettings& postProcessSettings) {
+  void DebugOverlay::Draw(DebugSettings& debugSettings, PostProcessSettings& postProcessSettings,
+                          const RenderStats& renderStats, std::vector<SceneObject>& sceneObjects) {
 
-    ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x, 0.0f), ImGuiCond_Always, ImVec2(1.0f, 0.0f));
+    // ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x, 0.0f), ImGuiCond_Always, ImVec2(1.0f, 0.0f));
 
-    ImGui::Begin("Renderer Debug", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+    ImGui::Begin("Renderer Debug", nullptr, ImGuiWindowFlags_NoMove);
+
+    ImGui::Text("Frame Stats");
+    ImGui::Text("FPS: %.1f", renderStats.framesPerSecond);
+    ImGui::Text("Frame Time: %.2f ms", renderStats.frameTimeMs);
+    ImGui::Text("Draw Calls: %u", renderStats.drawCalls);
+    ImGui::Text("Visible Objects: %u", renderStats.visibleObjects);
+
+    ImGui::Separator();
 
     ImGui::Text("Render States");
     ImGui::Checkbox("Wireframe", &debugSettings.wireframeEnabled);
@@ -61,6 +70,30 @@ namespace Engine {
     ImGui::SliderFloat("Exposure", &postProcessSettings.exposure, 0.1f, 3.0f);
 
     ImGui::SliderFloat("Contrast", &postProcessSettings.contrast, 0.1f, 3.0f);
+
+    ImGui::Separator();
+
+    ImGui::Text("Scene Objects");
+
+    for (SceneObject& object : sceneObjects) {
+      ImGui::PushID(object.name.c_str());
+
+      if (ImGui::TreeNode(object.name.c_str())) {
+        ImGui::Checkbox("Enabled", &object.enabled);
+
+        ImGui::SliderFloat("Rotation Speed", &object.rotationSpeed, 0.0f, 5.0f);
+
+        ImGui::ColorEdit4("Base Color", &object.baseColor.x);
+
+        ImGui::DragFloat3("Position", &object.transform.position.x, 0.05f);
+
+        ImGui::DragFloat3("Scale", &object.transform.scale.x, 0.05f, 0.1f, 5.0f);
+
+        ImGui::TreePop();
+      }
+
+      ImGui::PopID();
+    }
 
     ImGui::End();
   }

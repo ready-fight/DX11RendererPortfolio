@@ -13,6 +13,7 @@
 #include "Engine/Renderer/DebugSettings.h"
 
 #include "Engine/Renderer/DebugOverlay.h"
+#include "Engine/Scene/Scene.h"
 
 namespace Engine {
   class Application final {
@@ -25,6 +26,7 @@ namespace Engine {
   private:
     void Tick(float deltaSeconds);
     void Render();
+    void BuildTestScene();
 
   private:
     Win32Window m_window;
@@ -39,6 +41,7 @@ namespace Engine {
     DebugSettings m_debugSettings;
 
     MeshPass m_meshPass;
+    Scene m_scene;
     Camera m_camera;
     Timer m_timer;
 

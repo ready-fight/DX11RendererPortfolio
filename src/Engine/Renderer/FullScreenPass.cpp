@@ -63,7 +63,7 @@ namespace Engine {
     context->PSSetSamplers(0, 1, samplers);
 
     context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    context->Draw(3, 0);
+    graphicsDevice.Draw(3, 0);
 
     ID3D11ShaderResourceView* nullShaderResources[] = {nullptr};
 

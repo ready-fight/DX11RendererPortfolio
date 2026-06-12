@@ -53,6 +53,8 @@ namespace Engine {
       return false;
     }
 
+    BuildTestScene();
+
     m_isRunning = true;
 
     m_postProcessSettings.grayscaleAmount = 0.0f;
@@ -92,7 +94,6 @@ namespace Engine {
   }
 
   void Application::Tick(float deltaSeconds) {
-    (void)deltaSeconds;
 
     m_keyboardInput.Update();
 
@@ -147,6 +148,9 @@ namespace Engine {
   }
 
   void Application::Render() {
+
+    m_graphicsDevice.BeginFrameStats(m_timer.GetDeltaSeconds());
+
     m_graphicsDevice.SetRenderTarget(m_sceneRenderTarget, &m_graphicsDevice.GetDepthStencilBuffer());
 
     m_graphicsDevice.ClearRenderTarget(m_sceneRenderTarget, 0.05f, 0.08f, 0.12f, 1.0f);
@@ -155,7 +159,7 @@ namespace Engine {
 
     m_renderStates.Apply(m_graphicsDevice, m_debugSettings.wireframeEnabled);
 
-    m_meshPass.Render(m_graphicsDevice, m_camera, m_timer.GetTotalSeconds());
+    m_meshPass.Render(m_graphicsDevice, m_camera, m_scene, m_timer.GetTotalSeconds());
 
     m_graphicsDevice.SetBackBufferRenderTarget();
 
@@ -167,10 +171,45 @@ namespace Engine {
 
     m_debugOverlay.BeginFrame();
 
-    m_debugOverlay.Draw(m_debugSettings, m_postProcessSettings);
+    m_debugOverlay.Draw(
+        m_debugSettings, m_postProcessSettings, m_graphicsDevice.GetRenderStats(), m_scene.GetObjects());
 
     m_debugOverlay.EndFrame();
 
     m_graphicsDevice.EndFrame();
+  }
+
+  void Application::BuildTestScene() {
+    m_scene.Clear();
+
+    SceneObject leftCube = {};
+    leftCube.name = "Left Cube";
+    leftCube.mesh = &m_meshPass.GetCubeMesh();
+    leftCube.material = &m_meshPass.GetColorMaterial();
+    leftCube.transform.position = {-1.5f, 0.0f, 0.0f};
+    leftCube.transform.scale = {0.75f, 0.75f, 0.75f};
+    leftCube.baseColor = {1.0f, 0.35f, 0.35f, 1.0f};
+    leftCube.rotationSpeed = 0.75f;
+    m_scene.AddObject(leftCube);
+
+    SceneObject centerCube = {};
+    centerCube.name = "Center Cube";
+    centerCube.mesh = &m_meshPass.GetCubeMesh();
+    centerCube.material = &m_meshPass.GetColorMaterial();
+    centerCube.transform.position = {0.0f, 0.0f, 0.0f};
+    centerCube.transform.scale = {1.0f, 1.0f, 1.0f};
+    centerCube.baseColor = {0.35f, 1.0f, 0.35f, 1.0f};
+    centerCube.rotationSpeed = 1.25f;
+    m_scene.AddObject(centerCube);
+
+    SceneObject rightCube = {};
+    rightCube.name = "Right Cube";
+    rightCube.mesh = &m_meshPass.GetCubeMesh();
+    rightCube.material = &m_meshPass.GetColorMaterial();
+    rightCube.transform.position = {1.5f, 0.0f, 0.0f};
+    rightCube.transform.scale = {0.5f, 0.5f, 0.5f};
+    rightCube.baseColor = {0.35f, 0.55f, 1.0f, 1.0f};
+    rightCube.rotationSpeed = 2.0f;
+    m_scene.AddObject(rightCube);
   }
 }

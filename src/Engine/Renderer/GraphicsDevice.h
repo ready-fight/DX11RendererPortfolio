@@ -7,6 +7,7 @@
 #include <cstdint>
 
 #include "Engine/Renderer/DepthStencilBuffer.h"
+#include "Engine/Renderer/RenderStats.h"
 #include "Engine/Renderer/RenderTarget.h"
 
 namespace Engine {
@@ -31,6 +32,15 @@ namespace Engine {
     void ClearRenderTarget(RenderTarget& renderTarget, float r, float g, float b, float a);
     void ClearDepthStencil(DepthStencilBuffer& depthStencilBuffer);
 
+    void BeginFrameStats(float deltaSeconds);
+
+    void Draw(uint32_t vertexCount, uint32_t startVertexLocation);
+    void DrawIndexed(uint32_t indexCount, uint32_t startIndexLocation, int32_t baseVertexLocation);
+
+    void AddVisibleObject();
+
+    const RenderStats& GetRenderStats() const { return m_renderStats; }
+
   private:
     void ReportLiveObjects();
 
@@ -41,6 +51,11 @@ namespace Engine {
 
     RenderTarget m_backBufferRenderTarget;
     DepthStencilBuffer m_depthStencilBuffer;
+
+    RenderStats m_renderStats;
+
+    float m_fpsAccumulatedTime = 0.0f;
+    uint32_t m_fpsFrameCount = 0;
 
     bool m_debugLayerEnabled = false;
   };

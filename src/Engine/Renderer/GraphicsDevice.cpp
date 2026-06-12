@@ -164,4 +164,33 @@ namespace Engine {
     }
 #endif
   }
+
+  void GraphicsDevice::BeginFrameStats(float deltaSeconds) {
+    m_renderStats.frameTimeMs = deltaSeconds * 1000.0f;
+    m_renderStats.drawCalls = 0;
+    m_renderStats.visibleObjects = 0;
+
+    m_fpsAccumulatedTime += deltaSeconds;
+    ++m_fpsFrameCount;
+
+    if (m_fpsAccumulatedTime >= 0.25f) {
+      m_renderStats.framesPerSecond = static_cast<float>(m_fpsFrameCount) / m_fpsAccumulatedTime;
+
+      m_fpsAccumulatedTime = 0.0f;
+      m_fpsFrameCount = 0;
+    }
+  }
+
+  void GraphicsDevice::Draw(uint32_t vertexCount, uint32_t startVertexLocation) {
+    m_context->Draw(vertexCount, startVertexLocation);
+    ++m_renderStats.drawCalls;
+  }
+
+  void GraphicsDevice::DrawIndexed(uint32_t indexCount, uint32_t startIndexLocation, int32_t baseVertexLocation) {
+    m_context->DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);
+
+    ++m_renderStats.drawCalls;
+  }
+
+  void GraphicsDevice::AddVisibleObject() { ++m_renderStats.visibleObjects; }
 }

@@ -53,6 +53,9 @@ add_executable(RenderSandbox WIN32
     Engine/Renderer/DebugSettings.h
     Engine/Renderer/DebugOverlay.h
     Engine/Renderer/DebugOverlay.cpp
+    Engine/Renderer/RenderStats.h
+    Engine/Scene/Scene.h
+    Engine/Scene/Scene.cpp
 )
 
 target_include_directories(RenderSandbox PRIVATE

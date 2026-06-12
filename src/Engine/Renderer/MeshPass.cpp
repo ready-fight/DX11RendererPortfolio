@@ -3,6 +3,7 @@
 #include "Engine/Renderer/GraphicsDevice.h"
 #include "Engine/Renderer/MeshFactory.h"
 #include "Engine/Renderer/VertexTypes.h"
+#include "Engine/Scene/Scene.h"
 
 #include <DirectXMath.h>
 #include <cstddef>
@@ -88,39 +89,10 @@ namespace Engine {
       return false;
     }
 
-    SceneObject leftCube = {};
-    leftCube.mesh = &m_cubeMesh;
-    leftCube.material = &m_colorMaterial;
-    leftCube.transform.position = {-1.5f, 0.0f, 0.0f};
-    leftCube.transform.scale = {0.75f, 0.75f, 0.75f};
-    leftCube.baseColor = {1.0f, 0.35f, 0.35f, 1.0f};
-    leftCube.rotationSpeed = 0.75f;
-    m_sceneObjects.push_back(leftCube);
-
-    SceneObject centerCube = {};
-    centerCube.mesh = &m_cubeMesh;
-    centerCube.material = &m_colorMaterial;
-    centerCube.transform.position = {0.0f, 0.0f, 0.0f};
-    centerCube.transform.scale = {1.0f, 1.0f, 1.0f};
-    centerCube.baseColor = {0.35f, 1.0f, 0.35f, 1.0f};
-    centerCube.rotationSpeed = 1.25f;
-    m_sceneObjects.push_back(centerCube);
-
-    SceneObject rightCube = {};
-    rightCube.mesh = &m_cubeMesh;
-    rightCube.material = &m_colorMaterial;
-    rightCube.transform.position = {1.5f, 0.0f, 0.0f};
-    rightCube.transform.scale = {0.5f, 0.5f, 0.5f};
-    rightCube.baseColor = {0.35f, 0.55f, 1.0f, 1.0f};
-    rightCube.rotationSpeed = 2.0f;
-    m_sceneObjects.push_back(rightCube);
-
     return true;
   }
 
   void MeshPass::Shutdown() {
-
-    m_sceneObjects.clear();
 
     m_lightBuffer.Shutdown();
     m_materialBuffer.Shutdown();
@@ -132,7 +104,7 @@ namespace Engine {
     m_colorMaterial.Shutdown();
   }
 
-  void MeshPass::Render(GraphicsDevice& graphicsDevice, const Camera& camera, float totalSeconds) {
+  void MeshPass::Render(GraphicsDevice& graphicsDevice, const Camera& camera, Scene& scene, float totalSeconds) {
     using namespace DirectX;
 
     const XMMATRIX viewProjection = camera.GetViewProjectionMatrix();
@@ -150,8 +122,8 @@ namespace Engine {
 
     m_lightBuffer.Update(graphicsDevice, &lightConstants, sizeof(lightConstants));
 
-    for (SceneObject& object : m_sceneObjects) {
-      if (!object.mesh || !object.material) {
+    for (SceneObject& object : scene.GetObjects()) {
+      if (!object.enabled || !object.mesh || !object.material) {
         continue;
       }
 
@@ -181,6 +153,7 @@ namespace Engine {
 
       object.mesh->Bind(graphicsDevice);
       object.mesh->Draw(graphicsDevice);
+      graphicsDevice.AddVisibleObject();
     }
   }
 }

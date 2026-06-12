@@ -27,7 +27,5 @@ namespace Engine {
     m_indexBuffer.BindIndexBuffer(graphicsDevice);
   }
 
-  void Mesh::Draw(GraphicsDevice& graphicsDevice) {
-    graphicsDevice.GetContext()->DrawIndexed(m_indexBuffer.GetCount(), 0, 0);
-  }
+  void Mesh::Draw(GraphicsDevice& graphicsDevice) { graphicsDevice.DrawIndexed(m_indexBuffer.GetCount(), 0, 0); }
 }
