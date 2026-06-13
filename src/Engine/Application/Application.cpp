@@ -48,6 +48,11 @@ namespace Engine {
       return false;
     }
 
+    if (!m_renderResources.Initialize(m_graphicsDevice)) {
+      MessageBoxW(nullptr, L"Failed to initialize render resources.", L"Error", MB_OK);
+      return false;
+    }
+
     if (!m_meshPass.Initialize(m_graphicsDevice)) {
       MessageBoxW(nullptr, L"Failed to initialize mesh pass.", L"Error", MB_OK);
       return false;
@@ -66,7 +71,12 @@ namespace Engine {
   }
 
   void Application::Shutdown() {
+
+    m_scene.Clear();
+
     m_meshPass.Shutdown();
+    m_renderResources.Shutdown();
+
     m_debugOverlay.Shutdown();
     m_fullscreenPass.Shutdown();
     m_sceneRenderTarget.Shutdown();
@@ -159,7 +169,7 @@ namespace Engine {
 
     m_renderStates.Apply(m_graphicsDevice, m_debugSettings.wireframeEnabled);
 
-    m_meshPass.Render(m_graphicsDevice, m_camera, m_scene, m_timer.GetTotalSeconds());
+    m_meshPass.Render(m_graphicsDevice, m_renderResources, m_camera, m_scene, m_timer.GetTotalSeconds());
 
     m_graphicsDevice.SetBackBufferRenderTarget();
 
@@ -184,8 +194,8 @@ namespace Engine {
 
     SceneObject leftCube = {};
     leftCube.name = "Left Cube";
-    leftCube.mesh = m_meshPass.GetCubeMeshHandle();
-    leftCube.material = m_meshPass.GetColorMaterialHandle();
+    leftCube.mesh = m_renderResources.GetCubeMeshHandle();
+    leftCube.material = m_renderResources.GetColorMaterialHandle();
     leftCube.transform.position = {-1.5f, 0.0f, 0.0f};
     leftCube.transform.scale = {0.75f, 0.75f, 0.75f};
     leftCube.baseColor = {1.0f, 0.35f, 0.35f, 1.0f};
@@ -194,8 +204,8 @@ namespace Engine {
 
     SceneObject centerCube = {};
     centerCube.name = "Center Cube";
-    centerCube.mesh = m_meshPass.GetCubeMeshHandle();
-    centerCube.material = m_meshPass.GetColorMaterialHandle();
+    centerCube.mesh = m_renderResources.GetCubeMeshHandle();
+    centerCube.material = m_renderResources.GetColorMaterialHandle();
     centerCube.transform.position = {0.0f, 0.0f, 0.0f};
     centerCube.transform.scale = {1.0f, 1.0f, 1.0f};
     centerCube.baseColor = {0.35f, 1.0f, 0.35f, 1.0f};
@@ -204,8 +214,8 @@ namespace Engine {
 
     SceneObject rightCube = {};
     rightCube.name = "Right Cube";
-    rightCube.mesh = m_meshPass.GetCubeMeshHandle();
-    rightCube.material = m_meshPass.GetColorMaterialHandle();
+    rightCube.mesh = m_renderResources.GetCubeMeshHandle();
+    rightCube.material = m_renderResources.GetColorMaterialHandle();
     rightCube.transform.position = {1.5f, 0.0f, 0.0f};
     rightCube.transform.scale = {0.5f, 0.5f, 0.5f};
     rightCube.baseColor = {0.35f, 0.55f, 1.0f, 1.0f};

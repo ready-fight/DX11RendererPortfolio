@@ -14,6 +14,7 @@
 
 #include "Engine/Renderer/DebugOverlay.h"
 #include "Engine/Scene/Scene.h"
+#include "Engine/Renderer/RenderResourceManager.h"
 
 namespace Engine {
   class Application final {
@@ -32,6 +33,7 @@ namespace Engine {
     Win32Window m_window;
     GraphicsDevice m_graphicsDevice;
     RenderStates m_renderStates;
+    RenderResourceManager m_renderResources;
 
     RenderTarget m_sceneRenderTarget;
     FullscreenPass m_fullscreenPass;
