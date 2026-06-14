@@ -12,7 +12,9 @@ namespace Engine
     class Texture2D final
     {
     public:
+    bool LoadFromFile(GraphicsDevice& graphicsDevice, const wchar_t* filePath);
         bool CreateCheckerboard(GraphicsDevice& graphicsDevice, uint32_t width, uint32_t height);
+        
         void Shutdown();
 
         void BindPS(GraphicsDevice& graphicsDevice, uint32_t textureSlot, uint32_t samplerSlot);

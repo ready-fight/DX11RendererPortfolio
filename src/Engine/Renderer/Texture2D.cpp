@@ -5,8 +5,121 @@
 #include "Engine/Renderer/GraphicsDevice.h"
 
 #include <vector>
+#include <wincodec.h>
+
 
 namespace Engine {
+
+  bool Texture2D::LoadFromFile(GraphicsDevice& graphicsDevice, const wchar_t* filePath) {
+    Microsoft::WRL::ComPtr<IWICImagingFactory> imagingFactory;
+
+    HRESULT hr = CoCreateInstance(
+        CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(imagingFactory.GetAddressOf()));
+
+    if (!DX_CHECK(hr)) {
+      return false;
+    }
+
+    Microsoft::WRL::ComPtr<IWICBitmapDecoder> decoder;
+
+    hr = imagingFactory->CreateDecoderFromFilename(
+        filePath, nullptr, GENERIC_READ, WICDecodeMetadataCacheOnLoad, decoder.GetAddressOf());
+
+    if (!DX_CHECK(hr)) {
+      return false;
+    }
+
+    Microsoft::WRL::ComPtr<IWICBitmapFrameDecode> frame;
+
+    hr = decoder->GetFrame(0, frame.GetAddressOf());
+
+    if (!DX_CHECK(hr)) {
+      return false;
+    }
+
+    Microsoft::WRL::ComPtr<IWICFormatConverter> converter;
+
+    hr = imagingFactory->CreateFormatConverter(converter.GetAddressOf());
+
+    if (!DX_CHECK(hr)) {
+      return false;
+    }
+
+    hr = converter->Initialize(
+        frame.Get(), GUID_WICPixelFormat32bppRGBA, WICBitmapDitherTypeNone, nullptr, 0.0, WICBitmapPaletteTypeCustom);
+
+    if (!DX_CHECK(hr)) {
+      return false;
+    }
+
+    UINT width = 0;
+    UINT height = 0;
+
+    hr = converter->GetSize(&width, &height);
+
+    if (!DX_CHECK(hr)) {
+      return false;
+    }
+
+    std::vector<uint8_t> pixels;
+    pixels.resize(static_cast<size_t>(width) * static_cast<size_t>(height) * 4);
+
+    const UINT stride = width * 4;
+    const UINT imageSize = stride * height;
+
+    hr = converter->CopyPixels(nullptr, stride, imageSize, pixels.data());
+
+    if (!DX_CHECK(hr)) {
+      return false;
+    }
+
+    D3D11_TEXTURE2D_DESC textureDesc = {};
+    textureDesc.Width = width;
+    textureDesc.Height = height;
+    textureDesc.MipLevels = 1;
+    textureDesc.ArraySize = 1;
+    textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    textureDesc.SampleDesc.Count = 1;
+    textureDesc.SampleDesc.Quality = 0;
+    textureDesc.Usage = D3D11_USAGE_DEFAULT;
+    textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+    D3D11_SUBRESOURCE_DATA initialData = {};
+    initialData.pSysMem = pixels.data();
+    initialData.SysMemPitch = stride;
+
+    hr = graphicsDevice.GetDevice()->CreateTexture2D(&textureDesc, &initialData, m_texture.GetAddressOf());
+
+    if (!DX_CHECK(hr)) {
+      return false;
+    }
+
+    hr = graphicsDevice.GetDevice()->CreateShaderResourceView(
+        m_texture.Get(), nullptr, m_shaderResourceView.GetAddressOf());
+
+    if (!DX_CHECK(hr)) {
+      return false;
+    }
+
+    D3D11_SAMPLER_DESC samplerDesc = {};
+    samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+    samplerDesc.MinLOD = 0.0f;
+    samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+    hr = graphicsDevice.GetDevice()->CreateSamplerState(&samplerDesc, m_samplerState.GetAddressOf());
+
+    if (!DX_CHECK(hr)) {
+      return false;
+    }
+
+    LogInfo("Texture loaded from file.");
+    return true;
+  }
+
   bool Texture2D::CreateCheckerboard(GraphicsDevice& graphicsDevice, uint32_t width, uint32_t height) {
     std::vector<uint32_t> pixels;
     pixels.resize(static_cast<size_t>(width) * static_cast<size_t>(height));

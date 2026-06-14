@@ -6,6 +6,8 @@
 #include "Engine/Renderer/RenderResourceManager.h"
 #include "Engine/Scene/Scene.h"
 
+#include "Engine/Core/Log.h"
+
 #include <DirectXMath.h>
 #include <cstddef>
 #include <iterator>
@@ -36,8 +38,13 @@ namespace Engine {
   }
 
   bool MeshPass::Initialize(GraphicsDevice& graphicsDevice) {
-    if (!m_checkerTexture.CreateCheckerboard(graphicsDevice, 64, 64)) {
-      return false;
+
+    if (!m_checkerTexture.LoadFromFile(graphicsDevice, L"assets/textures/test.jpg")) {
+      LogWarning("Failed to load texture file. Falling back to checkerboard texture.");
+
+      if (!m_checkerTexture.CreateCheckerboard(graphicsDevice, 64, 64)) {
+        return false;
+      }
     }
 
     if (!m_transformBuffer.CreateConstantBuffer(graphicsDevice, sizeof(TransformConstants))) {
@@ -62,12 +69,8 @@ namespace Engine {
     m_checkerTexture.Shutdown();
   }
 
-  void MeshPass::Render(
-    GraphicsDevice& graphicsDevice,
-    RenderResourceManager& renderResources,
-    const Camera& camera,
-    Scene& scene,
-    float totalSeconds) {
+  void MeshPass::Render(GraphicsDevice& graphicsDevice, RenderResourceManager& renderResources, const Camera& camera,
+                        Scene& scene, float totalSeconds) {
     using namespace DirectX;
 
     const XMMATRIX viewProjection = camera.GetViewProjectionMatrix();

@@ -4,9 +4,18 @@
 
 #include <Windows.h>
 
+#include <objbase.h>
+
 namespace Engine {
   bool Application::Initialize() {
 
+    HRESULT comResult = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+
+    if (FAILED(comResult)) {
+      MessageBoxW(nullptr, L"Failed to initialize COM.", L"Error", MB_OK);
+      return false;
+    }
+    
     WindowDesc windowDesc = {};
     windowDesc.title = L"DX11 Renderer Portfolio";
     windowDesc.width = 1280;
@@ -84,6 +93,8 @@ namespace Engine {
     m_graphicsDevice.Shutdown();
     m_window.Destroy();
     m_isRunning = false;
+
+    CoUninitialize();
   }
 
   int Application::Run() {

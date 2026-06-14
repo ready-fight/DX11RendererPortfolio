@@ -87,6 +87,7 @@ target_link_libraries(RenderSandbox PRIVATE
     dxgi
     d3dcompiler
     dxguid
+    windowscodecs
 )
 
 target_compile_definitions(RenderSandbox PRIVATE
