@@ -39,14 +39,6 @@ namespace Engine {
 
   bool MeshPass::Initialize(GraphicsDevice& graphicsDevice) {
 
-    if (!m_checkerTexture.LoadFromFile(graphicsDevice, L"assets/textures/test.jpg")) {
-      LogWarning("Failed to load texture file. Falling back to checkerboard texture.");
-
-      if (!m_checkerTexture.CreateCheckerboard(graphicsDevice, 64, 64)) {
-        return false;
-      }
-    }
-
     if (!m_transformBuffer.CreateConstantBuffer(graphicsDevice, sizeof(TransformConstants))) {
       return false;
     }
@@ -66,7 +58,6 @@ namespace Engine {
     m_lightBuffer.Shutdown();
     m_materialBuffer.Shutdown();
     m_transformBuffer.Shutdown();
-    m_checkerTexture.Shutdown();
   }
 
   void MeshPass::Render(GraphicsDevice& graphicsDevice, RenderResourceManager& renderResources, const Camera& camera,
@@ -114,12 +105,10 @@ namespace Engine {
 
       m_materialBuffer.Update(graphicsDevice, &materialConstants, sizeof(materialConstants));
 
-      material->Bind(graphicsDevice);
+      material->Bind(graphicsDevice, renderResources);
       m_transformBuffer.BindConstantBufferVS(graphicsDevice, 0);
       m_materialBuffer.BindConstantBufferPS(graphicsDevice, 1);
       m_lightBuffer.BindConstantBufferPS(graphicsDevice, 2);
-
-      m_checkerTexture.BindPS(graphicsDevice, 0, 0);
 
       mesh->Bind(graphicsDevice);
       mesh->Draw(graphicsDevice);

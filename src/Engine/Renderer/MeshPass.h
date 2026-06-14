@@ -2,7 +2,6 @@
 
 #include "Engine/Renderer/Camera.h"
 #include "Engine/Renderer/GpuBuffer.h"
-#include "Engine/Renderer/Texture2D.h"
 
 namespace Engine
 {
@@ -25,8 +24,6 @@ namespace Engine
         );
 
     private:
-        Texture2D m_checkerTexture;
-
         GpuBuffer m_transformBuffer;
         GpuBuffer m_materialBuffer;
         GpuBuffer m_lightBuffer;
