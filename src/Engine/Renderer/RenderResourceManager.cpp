@@ -10,6 +10,38 @@
 #include <cstddef>
 
 namespace Engine {
+
+  namespace {
+    TextureHandle CreateTextureResource(RenderResourceManager& resources, GraphicsDevice& graphicsDevice,
+                                        const wchar_t* filePath) {
+      auto texture = std::make_unique<Texture2D>();
+
+      if (!texture->LoadFromFile(graphicsDevice, filePath)) {
+        LogWarning("Failed to load texture file. Falling back to checkerboard texture.");
+
+        if (!texture->CreateCheckerboard(graphicsDevice, 64, 64)) {
+          return {};
+        }
+      }
+
+      return resources.AddTexture(std::move(texture));
+    }
+
+    MaterialHandle CreateColorMaterial(RenderResourceManager& resources, GraphicsDevice& graphicsDevice,
+                                       TextureHandle textureHandle, const D3D11_INPUT_ELEMENT_DESC* inputElements,
+                                       unsigned int inputElementCount) {
+      auto material = std::make_unique<Material>();
+
+      if (!material->Initialize(graphicsDevice, L"assets/shaders/Color.hlsl", inputElements, inputElementCount)) {
+        return {};
+      }
+
+      material->SetBaseTexture(textureHandle);
+
+      return resources.AddMaterial(std::move(material));
+    }
+  }
+
   bool RenderResourceManager::Initialize(GraphicsDevice& graphicsDevice) {
 
     D3D11_INPUT_ELEMENT_DESC inputElements[] = {{"POSITION",
@@ -41,17 +73,22 @@ namespace Engine {
                                                  D3D11_INPUT_PER_VERTEX_DATA,
                                                  0}};
 
-    auto baseTexture = std::make_unique<Texture2D>();
+    TextureHandle textureA = CreateTextureResource(*this, graphicsDevice, L"assets/textures/test.jpg");
 
-    if (!baseTexture->LoadFromFile(graphicsDevice, L"assets/textures/test.png")) {
-      LogWarning("Failed to load texture file. Falling back to checkerboard texture.");
+    TextureHandle textureB = CreateTextureResource(*this, graphicsDevice, L"assets/textures/test_b.jpg");
 
-      if (!baseTexture->CreateCheckerboard(graphicsDevice, 64, 64)) {
-        return false;
-      }
-    }
+    TextureHandle textureC = CreateTextureResource(*this, graphicsDevice, L"assets/textures/test_c.jpg");
 
-    TextureHandle baseTextureHandle = AddTexture(std::move(baseTexture));
+    m_redMaterialHandle = CreateColorMaterial(
+        *this, graphicsDevice, textureA, inputElements, static_cast<unsigned int>(std::size(inputElements)));
+
+    m_greenMaterialHandle = CreateColorMaterial(
+        *this, graphicsDevice, textureB, inputElements, static_cast<unsigned int>(std::size(inputElements)));
+
+    m_blueMaterialHandle = CreateColorMaterial(
+        *this, graphicsDevice, textureC, inputElements, static_cast<unsigned int>(std::size(inputElements)));
+
+    m_colorMaterialHandle = m_redMaterialHandle;
 
     auto colorMaterial = std::make_unique<Material>();
 
@@ -61,8 +98,6 @@ namespace Engine {
                                    static_cast<unsigned int>(std::size(inputElements)))) {
       return false;
     }
-
-    colorMaterial->SetBaseTexture(baseTextureHandle);
 
     m_colorMaterialHandle = AddMaterial(std::move(colorMaterial));
 
@@ -102,6 +137,9 @@ namespace Engine {
 
     m_cubeMeshHandle = {};
     m_colorMaterialHandle = {};
+    m_redMaterialHandle = {};
+    m_greenMaterialHandle = {};
+    m_blueMaterialHandle = {};
   }
 
   MeshHandle RenderResourceManager::AddMesh(std::unique_ptr<Mesh> mesh) {
