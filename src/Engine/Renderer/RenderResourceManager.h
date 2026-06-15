@@ -16,6 +16,9 @@ namespace Engine {
     bool Initialize(GraphicsDevice& graphicsDevice);
     void Shutdown();
 
+    TextureHandle CreateTexture(GraphicsDevice& graphicsDevice, const wchar_t* filePath);
+    MaterialHandle CreateColorMaterial(GraphicsDevice& graphicsDevice, TextureHandle textureHandle);
+
     Mesh* ResolveMesh(MeshHandle handle);
     Material* ResolveMaterial(MaterialHandle handle);
     Texture2D* ResolveTexture(TextureHandle handle);
@@ -25,11 +28,11 @@ namespace Engine {
     MaterialHandle GetRedMaterialHandle() const { return m_redMaterialHandle; }
     MaterialHandle GetGreenMaterialHandle() const { return m_greenMaterialHandle; }
     MaterialHandle GetBlueMaterialHandle() const { return m_blueMaterialHandle; }
-    TextureHandle AddTexture(std::unique_ptr<Texture2D> texture);
-    MaterialHandle AddMaterial(std::unique_ptr<Material> material);
 
   private:
     MeshHandle AddMesh(std::unique_ptr<Mesh> mesh);
+    TextureHandle AddTexture(std::unique_ptr<Texture2D> texture);
+    MaterialHandle AddMaterial(std::unique_ptr<Material> material);
 
   private:
     std::vector<std::unique_ptr<Mesh>> m_meshes;

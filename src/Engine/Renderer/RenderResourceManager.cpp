@@ -1,4 +1,3 @@
-// src/Engine/Renderer/RenderResourceManager.cpp
 #include "Engine/Renderer/RenderResourceManager.h"
 
 #include "Engine/Renderer/MeshFactory.h"
@@ -12,94 +11,88 @@
 namespace Engine {
 
   namespace {
-    TextureHandle CreateTextureResource(RenderResourceManager& resources, GraphicsDevice& graphicsDevice,
-                                        const wchar_t* filePath) {
-      auto texture = std::make_unique<Texture2D>();
+    void BuildVertexInputLayout(D3D11_INPUT_ELEMENT_DESC* inputElements) {
+      inputElements[0] = {"POSITION",
+                          0,
+                          DXGI_FORMAT_R32G32B32_FLOAT,
+                          0,
+                          static_cast<UINT>(offsetof(VertexPositionColor, position)),
+                          D3D11_INPUT_PER_VERTEX_DATA,
+                          0};
 
-      if (!texture->LoadFromFile(graphicsDevice, filePath)) {
-        LogWarning("Failed to load texture file. Falling back to checkerboard texture.");
+      inputElements[1] = {"COLOR",
+                          0,
+                          DXGI_FORMAT_R32G32B32_FLOAT,
+                          0,
+                          static_cast<UINT>(offsetof(VertexPositionColor, color)),
+                          D3D11_INPUT_PER_VERTEX_DATA,
+                          0};
 
-        if (!texture->CreateCheckerboard(graphicsDevice, 64, 64)) {
-          return {};
-        }
-      }
+      inputElements[2] = {"NORMAL",
+                          0,
+                          DXGI_FORMAT_R32G32B32_FLOAT,
+                          0,
+                          static_cast<UINT>(offsetof(VertexPositionColor, normal)),
+                          D3D11_INPUT_PER_VERTEX_DATA,
+                          0};
 
-      return resources.AddTexture(std::move(texture));
-    }
-
-    MaterialHandle CreateColorMaterial(RenderResourceManager& resources, GraphicsDevice& graphicsDevice,
-                                       TextureHandle textureHandle, const D3D11_INPUT_ELEMENT_DESC* inputElements,
-                                       unsigned int inputElementCount) {
-      auto material = std::make_unique<Material>();
-
-      if (!material->Initialize(graphicsDevice, L"assets/shaders/Color.hlsl", inputElements, inputElementCount)) {
-        return {};
-      }
-
-      material->SetBaseTexture(textureHandle);
-
-      return resources.AddMaterial(std::move(material));
+      inputElements[3] = {"TEXCOORD",
+                          0,
+                          DXGI_FORMAT_R32G32_FLOAT,
+                          0,
+                          static_cast<UINT>(offsetof(VertexPositionColor, texcoord)),
+                          D3D11_INPUT_PER_VERTEX_DATA,
+                          0};
     }
   }
 
-  bool RenderResourceManager::Initialize(GraphicsDevice& graphicsDevice) {
+  TextureHandle RenderResourceManager::CreateTexture(GraphicsDevice& graphicsDevice, const wchar_t* filePath) {
+    auto texture = std::make_unique<Texture2D>();
 
-    D3D11_INPUT_ELEMENT_DESC inputElements[] = {{"POSITION",
-                                                 0,
-                                                 DXGI_FORMAT_R32G32B32_FLOAT,
-                                                 0,
-                                                 static_cast<UINT>(offsetof(VertexPositionColor, position)),
-                                                 D3D11_INPUT_PER_VERTEX_DATA,
-                                                 0},
-                                                {"COLOR",
-                                                 0,
-                                                 DXGI_FORMAT_R32G32B32_FLOAT,
-                                                 0,
-                                                 static_cast<UINT>(offsetof(VertexPositionColor, color)),
-                                                 D3D11_INPUT_PER_VERTEX_DATA,
-                                                 0},
-                                                {"NORMAL",
-                                                 0,
-                                                 DXGI_FORMAT_R32G32B32_FLOAT,
-                                                 0,
-                                                 static_cast<UINT>(offsetof(VertexPositionColor, normal)),
-                                                 D3D11_INPUT_PER_VERTEX_DATA,
-                                                 0},
-                                                {"TEXCOORD",
-                                                 0,
-                                                 DXGI_FORMAT_R32G32_FLOAT,
-                                                 0,
-                                                 static_cast<UINT>(offsetof(VertexPositionColor, texcoord)),
-                                                 D3D11_INPUT_PER_VERTEX_DATA,
-                                                 0}};
+    if (!texture->LoadFromFile(graphicsDevice, filePath)) {
+      LogWarning("Failed to load texture file. Falling back to checkerboard texture.");
 
-    TextureHandle textureA = CreateTextureResource(*this, graphicsDevice, L"assets/textures/test.jpg");
-
-    TextureHandle textureB = CreateTextureResource(*this, graphicsDevice, L"assets/textures/test_b.jpg");
-
-    TextureHandle textureC = CreateTextureResource(*this, graphicsDevice, L"assets/textures/test_c.jpg");
-
-    m_redMaterialHandle = CreateColorMaterial(
-        *this, graphicsDevice, textureA, inputElements, static_cast<unsigned int>(std::size(inputElements)));
-
-    m_greenMaterialHandle = CreateColorMaterial(
-        *this, graphicsDevice, textureB, inputElements, static_cast<unsigned int>(std::size(inputElements)));
-
-    m_blueMaterialHandle = CreateColorMaterial(
-        *this, graphicsDevice, textureC, inputElements, static_cast<unsigned int>(std::size(inputElements)));
-
-    m_colorMaterialHandle = m_redMaterialHandle;
-
-    auto colorMaterial = std::make_unique<Material>();
-
-    if (!colorMaterial->Initialize(graphicsDevice,
-                                   L"assets/shaders/Color.hlsl",
-                                   inputElements,
-                                   static_cast<unsigned int>(std::size(inputElements)))) {
-      return false;
+      if (!texture->CreateCheckerboard(graphicsDevice, 64, 64)) {
+        return {};
+      }
     }
 
-    m_colorMaterialHandle = AddMaterial(std::move(colorMaterial));
+    return AddTexture(std::move(texture));
+  }
+
+  MaterialHandle RenderResourceManager::CreateColorMaterial(GraphicsDevice& graphicsDevice,
+                                                            TextureHandle textureHandle) {
+    D3D11_INPUT_ELEMENT_DESC inputElements[4] = {};
+    BuildVertexInputLayout(inputElements);
+
+    auto material = std::make_unique<Material>();
+
+    if (!material->Initialize(graphicsDevice,
+                              L"assets/shaders/Color.hlsl",
+                              inputElements,
+                              static_cast<unsigned int>(std::size(inputElements)))) {
+      return {};
+    }
+
+    material->SetBaseTexture(textureHandle);
+
+    return AddMaterial(std::move(material));
+  }
+
+  bool RenderResourceManager::Initialize(GraphicsDevice& graphicsDevice) {
+    TextureHandle textureA = CreateTexture(graphicsDevice, L"assets/textures/test.png");
+
+    TextureHandle textureB = CreateTexture(graphicsDevice, L"assets/textures/test_b.png");
+
+    TextureHandle textureC = CreateTexture(graphicsDevice, L"assets/textures/test_c.png");
+
+    m_redMaterialHandle = CreateColorMaterial(graphicsDevice, textureA);
+
+    m_greenMaterialHandle = CreateColorMaterial(graphicsDevice, textureB);
+
+    m_blueMaterialHandle = CreateColorMaterial(graphicsDevice, textureC);
+
+    m_colorMaterialHandle = m_redMaterialHandle;
 
     auto cubeMesh = std::make_unique<Mesh>();
 
