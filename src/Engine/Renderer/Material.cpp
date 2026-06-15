@@ -8,6 +8,20 @@
 namespace Engine {
 
   namespace {
+
+    const wchar_t* GetShaderPath(MaterialShaderType shaderType) {
+      switch (shaderType) {
+        case MaterialShaderType::LitTextured:
+          return L"assets/shaders/Color.hlsl";
+
+        case MaterialShaderType::UnlitTextured:
+          return L"assets/shaders/UnlitTextured.hlsl";
+
+        default:
+          return L"assets/shaders/Color.hlsl";
+      }
+    }
+
     struct MaterialConstants {
       DirectX::XMFLOAT4 baseColor;
     };
@@ -15,9 +29,13 @@ namespace Engine {
     static_assert(sizeof(MaterialConstants) % 16 == 0);
   }
 
-  bool Material::Initialize(GraphicsDevice& graphicsDevice, const wchar_t* shaderPath,
+  bool Material::Initialize(GraphicsDevice& graphicsDevice, const MaterialDesc& desc,
                             const D3D11_INPUT_ELEMENT_DESC* inputElements, unsigned int inputElementCount) {
-    if (!m_shader.Initialize(graphicsDevice, shaderPath, inputElements, inputElementCount)) {
+
+    m_shaderType = desc.shaderType;
+    m_baseTexture = desc.baseTexture;
+
+    if (!m_shader.Initialize(graphicsDevice, GetShaderPath(desc.shaderType), inputElements, inputElementCount)) {
       return false;
     }
 

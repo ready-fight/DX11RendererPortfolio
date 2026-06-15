@@ -1,9 +1,11 @@
 #pragma once
 
 #include "Engine/Renderer/Material.h"
+#include "Engine/Renderer/MaterialTypes.h"
 #include "Engine/Renderer/Mesh.h"
 #include "Engine/Renderer/RenderResourceHandles.h"
 #include "Engine/Renderer/Texture2D.h"
+
 
 #include <memory>
 #include <vector>
@@ -17,7 +19,7 @@ namespace Engine {
     void Shutdown();
 
     TextureHandle CreateTexture(GraphicsDevice& graphicsDevice, const wchar_t* filePath);
-    MaterialHandle CreateColorMaterial(GraphicsDevice& graphicsDevice, TextureHandle textureHandle);
+    MaterialHandle CreateMaterial(GraphicsDevice& graphicsDevice, const MaterialDesc& desc);
 
     Mesh* ResolveMesh(MeshHandle handle);
     Material* ResolveMaterial(MaterialHandle handle);

@@ -60,21 +60,16 @@ namespace Engine {
     return AddTexture(std::move(texture));
   }
 
-  MaterialHandle RenderResourceManager::CreateColorMaterial(GraphicsDevice& graphicsDevice,
-                                                            TextureHandle textureHandle) {
+  MaterialHandle RenderResourceManager::CreateMaterial(GraphicsDevice& graphicsDevice, const MaterialDesc& desc) {
     D3D11_INPUT_ELEMENT_DESC inputElements[4] = {};
     BuildVertexInputLayout(inputElements);
 
     auto material = std::make_unique<Material>();
 
-    if (!material->Initialize(graphicsDevice,
-                              L"assets/shaders/Color.hlsl",
-                              inputElements,
-                              static_cast<unsigned int>(std::size(inputElements)))) {
+    if (!material->Initialize(
+            graphicsDevice, desc, inputElements, static_cast<unsigned int>(std::size(inputElements)))) {
       return {};
     }
-
-    material->SetBaseTexture(textureHandle);
 
     return AddMaterial(std::move(material));
   }
@@ -86,11 +81,21 @@ namespace Engine {
 
     TextureHandle textureC = CreateTexture(graphicsDevice, L"assets/textures/test_c.jpg");
 
-    m_redMaterialHandle = CreateColorMaterial(graphicsDevice, textureA);
+    MaterialDesc redMaterialDesc = {};
+    redMaterialDesc.shaderType = MaterialShaderType::LitTextured;
+    redMaterialDesc.baseTexture = textureA;
 
-    m_greenMaterialHandle = CreateColorMaterial(graphicsDevice, textureB);
+    MaterialDesc greenMaterialDesc = {};
+    greenMaterialDesc.shaderType = MaterialShaderType::UnlitTextured;
+    greenMaterialDesc.baseTexture = textureB;
 
-    m_blueMaterialHandle = CreateColorMaterial(graphicsDevice, textureC);
+    MaterialDesc blueMaterialDesc = {};
+    blueMaterialDesc.shaderType = MaterialShaderType::LitTextured;
+    blueMaterialDesc.baseTexture = textureC;
+
+    m_redMaterialHandle = CreateMaterial(graphicsDevice, redMaterialDesc);
+    m_greenMaterialHandle = CreateMaterial(graphicsDevice, greenMaterialDesc);
+    m_blueMaterialHandle = CreateMaterial(graphicsDevice, blueMaterialDesc);
 
     m_colorMaterialHandle = m_redMaterialHandle;
 
