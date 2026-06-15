@@ -21,10 +21,6 @@ namespace Engine {
       DirectX::XMFLOAT4X4 worldViewProjection;
     };
 
-    struct MaterialConstants {
-      DirectX::XMFLOAT4 baseColor;
-    };
-
     struct LightConstants {
       DirectX::XMFLOAT4 lightDirection;
       DirectX::XMFLOAT4 lightColor;
@@ -32,7 +28,6 @@ namespace Engine {
     };
 
     static_assert(sizeof(TransformConstants) % 16 == 0);
-    static_assert(sizeof(MaterialConstants) % 16 == 0);
     static_assert(sizeof(LightConstants) % 16 == 0);
 
   }
@@ -40,10 +35,6 @@ namespace Engine {
   bool MeshPass::Initialize(GraphicsDevice& graphicsDevice) {
 
     if (!m_transformBuffer.CreateConstantBuffer(graphicsDevice, sizeof(TransformConstants))) {
-      return false;
-    }
-
-    if (!m_materialBuffer.CreateConstantBuffer(graphicsDevice, sizeof(MaterialConstants))) {
       return false;
     }
 
@@ -56,7 +47,6 @@ namespace Engine {
 
   void MeshPass::Shutdown() {
     m_lightBuffer.Shutdown();
-    m_materialBuffer.Shutdown();
     m_transformBuffer.Shutdown();
   }
 
@@ -100,14 +90,8 @@ namespace Engine {
 
       m_transformBuffer.Update(graphicsDevice, &constants, sizeof(constants));
 
-      MaterialConstants materialConstants = {};
-      materialConstants.baseColor = object.materialInstance.baseColor;
-
-      m_materialBuffer.Update(graphicsDevice, &materialConstants, sizeof(materialConstants));
-
-      material->Bind(graphicsDevice, renderResources);
+      material->Bind(graphicsDevice, renderResources, object.materialInstance);
       m_transformBuffer.BindConstantBufferVS(graphicsDevice, 0);
-      m_materialBuffer.BindConstantBufferPS(graphicsDevice, 1);
       m_lightBuffer.BindConstantBufferPS(graphicsDevice, 2);
 
       mesh->Bind(graphicsDevice);

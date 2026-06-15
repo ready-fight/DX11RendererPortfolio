@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Engine/Renderer/GpuBuffer.h"
+#include "Engine/Renderer/MaterialInstance.h"
 #include "Engine/Renderer/RenderResourceHandles.h"
 #include "Engine/Renderer/ShaderProgram.h"
 
@@ -18,10 +20,11 @@ namespace Engine {
 
     void SetBaseTexture(TextureHandle textureHandle) { m_baseTexture = textureHandle; }
 
-    void Bind(GraphicsDevice& graphicsDevice, RenderResourceManager& renderResources);
+    void Bind(GraphicsDevice& graphicsDevice, RenderResourceManager& renderResources, const MaterialInstance& materialInstance);
 
   private:
     ShaderProgram m_shader;
+    GpuBuffer m_materialBuffer;
     TextureHandle m_baseTexture;
   };
 }

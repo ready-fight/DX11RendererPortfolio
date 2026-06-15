@@ -25,7 +25,6 @@ namespace Engine
 
     private:
         GpuBuffer m_transformBuffer;
-        GpuBuffer m_materialBuffer;
         GpuBuffer m_lightBuffer;
     };
 }
