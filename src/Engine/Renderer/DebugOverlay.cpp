@@ -83,9 +83,33 @@ namespace Engine {
         const MaterialHandle materialHandle = object.materialInstance.material;
         const MaterialShaderType shaderType = renderResources.GetMaterialShaderType(materialHandle);
 
-        ImGui::Text("Material: %s", renderResources.GetMaterialDebugName(materialHandle));
+        ImGui::Text("Current Material: %s", renderResources.GetMaterialDebugName(materialHandle));
 
         ImGui::Text("Shader Type: %s", ToString(shaderType));
+
+        const uint32_t materialCount = renderResources.GetMaterialCount();
+
+        const char* currentMaterialName = renderResources.GetMaterialDebugName(materialHandle);
+
+        if (ImGui::BeginCombo("Material", currentMaterialName)) {
+          for (uint32_t materialIndex = 0; materialIndex < materialCount; ++materialIndex) {
+            MaterialHandle candidateHandle = renderResources.GetMaterialHandleAt(materialIndex);
+
+            const bool isSelected = candidateHandle.value == object.materialInstance.material.value;
+
+            const char* candidateName = renderResources.GetMaterialDebugName(candidateHandle);
+
+            if (ImGui::Selectable(candidateName, isSelected)) {
+              object.materialInstance.material = candidateHandle;
+            }
+
+            if (isSelected) {
+              ImGui::SetItemDefaultFocus();
+            }
+          }
+
+          ImGui::EndCombo();
+        }
 
         ImGui::Checkbox("Enabled", &object.enabled);
 

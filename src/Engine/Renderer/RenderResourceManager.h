@@ -33,6 +33,16 @@ namespace Engine {
     const char* GetMaterialDebugName(MaterialHandle handle) const;
     MaterialShaderType GetMaterialShaderType(MaterialHandle handle) const;
 
+    uint32_t GetMaterialCount() const { return static_cast<uint32_t>(m_materials.size()); }
+
+    MaterialHandle GetMaterialHandleAt(uint32_t index) const {
+      if (index >= m_materials.size()) {
+        return {};
+      }
+
+      return MaterialHandle{index};
+    }
+
   private:
     MeshHandle AddMesh(std::unique_ptr<Mesh> mesh);
     TextureHandle AddTexture(std::unique_ptr<Texture2D> texture);
