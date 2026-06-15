@@ -77,7 +77,7 @@ namespace Engine {
   bool RenderResourceManager::Initialize(GraphicsDevice& graphicsDevice) {
     TextureHandle textureA = CreateTexture(graphicsDevice, L"assets/textures/test.jpg");
 
-    TextureHandle textureB = CreateTexture(graphicsDevice, L"assets/textures/test_b.jpg");
+    TextureHandle textureB = CreateTexture(graphicsDevice, L"assets/textures/test_b.png");
 
     TextureHandle textureC = CreateTexture(graphicsDevice, L"assets/textures/test_c.jpg");
 
