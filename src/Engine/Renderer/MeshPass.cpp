@@ -82,7 +82,7 @@ namespace Engine {
     for (SceneObject& object : scene.GetObjects()) {
 
       Mesh* mesh = renderResources.ResolveMesh(object.mesh);
-      Material* material = renderResources.ResolveMaterial(object.material);
+      Material* material = renderResources.ResolveMaterial(object.materialInstance.material);
 
       if (!object.enabled || !mesh || !material) {
         continue;
@@ -101,7 +101,7 @@ namespace Engine {
       m_transformBuffer.Update(graphicsDevice, &constants, sizeof(constants));
 
       MaterialConstants materialConstants = {};
-      materialConstants.baseColor = object.baseColor;
+      materialConstants.baseColor = object.materialInstance.baseColor;
 
       m_materialBuffer.Update(graphicsDevice, &materialConstants, sizeof(materialConstants));
 

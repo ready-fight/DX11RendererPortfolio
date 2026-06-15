@@ -1,9 +1,9 @@
 #pragma once
 
+#include "Engine/Renderer/MaterialInstance.h"
 #include "Engine/Renderer/RenderResourceHandles.h"
 #include "Engine/Scene/Transform.h"
 
-#include <DirectXMath.h>
 #include <string>
 
 namespace Engine {
@@ -15,11 +15,9 @@ namespace Engine {
     std::string name;
 
     MeshHandle mesh;
-    MaterialHandle material;
+    MaterialInstance materialInstance;
 
     Transform transform;
-
-    DirectX::XMFLOAT4 baseColor = {1.0f, 1.0f, 1.0f, 1.0f};
 
     float rotationSpeed = 1.0f;
     bool enabled = true;

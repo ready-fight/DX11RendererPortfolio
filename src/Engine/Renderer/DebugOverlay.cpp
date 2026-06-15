@@ -83,7 +83,7 @@ namespace Engine {
 
         ImGui::SliderFloat("Rotation Speed", &object.rotationSpeed, 0.0f, 5.0f);
 
-        ImGui::ColorEdit4("Base Color", &object.baseColor.x);
+        ImGui::ColorEdit4("Base Color", &object.materialInstance.baseColor.x);
 
         ImGui::DragFloat3("Position", &object.transform.position.x, 0.05f);
 
