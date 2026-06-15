@@ -1,6 +1,7 @@
 #include "Engine/Renderer/DebugOverlay.h"
-
 #include "Engine/Renderer/GraphicsDevice.h"
+#include "Engine/Renderer/MaterialTypes.h"
+#include "Engine/Renderer/RenderResourceManager.h"
 
 #include <Windows.h>
 
@@ -44,9 +45,8 @@ namespace Engine {
   }
 
   void DebugOverlay::Draw(DebugSettings& debugSettings, PostProcessSettings& postProcessSettings,
-                          const RenderStats& renderStats, std::vector<SceneObject>& sceneObjects) {
-
-    // ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x, 0.0f), ImGuiCond_Always, ImVec2(1.0f, 0.0f));
+                          const RenderStats& renderStats, const RenderResourceManager& renderResources,
+                          std::vector<SceneObject>& sceneObjects) {
 
     ImGui::Begin("Renderer Debug", nullptr, ImGuiWindowFlags_NoMove);
 
@@ -79,6 +79,14 @@ namespace Engine {
       ImGui::PushID(object.name.c_str());
 
       if (ImGui::TreeNode(object.name.c_str())) {
+
+        const MaterialHandle materialHandle = object.materialInstance.material;
+        const MaterialShaderType shaderType = renderResources.GetMaterialShaderType(materialHandle);
+
+        ImGui::Text("Material: %s", renderResources.GetMaterialDebugName(materialHandle));
+
+        ImGui::Text("Shader Type: %s", ToString(shaderType));
+
         ImGui::Checkbox("Enabled", &object.enabled);
 
         ImGui::SliderFloat("Rotation Speed", &object.rotationSpeed, 0.0f, 5.0f);

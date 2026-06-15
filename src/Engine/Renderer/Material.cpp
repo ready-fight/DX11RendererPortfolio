@@ -32,6 +32,7 @@ namespace Engine {
   bool Material::Initialize(GraphicsDevice& graphicsDevice, const MaterialDesc& desc,
                             const D3D11_INPUT_ELEMENT_DESC* inputElements, unsigned int inputElementCount) {
 
+    m_debugName = desc.debugName;
     m_shaderType = desc.shaderType;
     m_baseTexture = desc.baseTexture;
 

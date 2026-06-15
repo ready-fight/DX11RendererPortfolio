@@ -82,14 +82,17 @@ namespace Engine {
     TextureHandle textureC = CreateTexture(graphicsDevice, L"assets/textures/test_c.jpg");
 
     MaterialDesc redMaterialDesc = {};
+    redMaterialDesc.debugName = "Red Lit Material";
     redMaterialDesc.shaderType = MaterialShaderType::LitTextured;
     redMaterialDesc.baseTexture = textureA;
 
     MaterialDesc greenMaterialDesc = {};
+    greenMaterialDesc.debugName = "Green Unlit Material";
     greenMaterialDesc.shaderType = MaterialShaderType::UnlitTextured;
     greenMaterialDesc.baseTexture = textureB;
 
     MaterialDesc blueMaterialDesc = {};
+    blueMaterialDesc.debugName = "Blue Lit Material";
     blueMaterialDesc.shaderType = MaterialShaderType::LitTextured;
     blueMaterialDesc.baseTexture = textureC;
 
@@ -180,5 +183,21 @@ namespace Engine {
     }
 
     return m_textures[handle.value].get();
+  }
+
+  const char* RenderResourceManager::GetMaterialDebugName(MaterialHandle handle) const {
+    if (!handle.IsValid() || handle.value >= m_materials.size()) {
+      return "Invalid Material";
+    }
+
+    return m_materials[handle.value]->GetDebugName().c_str();
+  }
+
+  MaterialShaderType RenderResourceManager::GetMaterialShaderType(MaterialHandle handle) const {
+    if (!handle.IsValid() || handle.value >= m_materials.size()) {
+      return MaterialShaderType::LitTextured;
+    }
+
+    return m_materials[handle.value]->GetShaderType();
   }
 }

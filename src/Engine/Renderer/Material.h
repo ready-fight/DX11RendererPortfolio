@@ -6,6 +6,7 @@
 #include "Engine/Renderer/ShaderProgram.h"
 
 #include <d3d11.h>
+#include <string>
 
 namespace Engine {
   class GraphicsDevice;
@@ -21,10 +22,14 @@ namespace Engine {
     void Bind(GraphicsDevice& graphicsDevice, RenderResourceManager& renderResources,
               const MaterialInstance& materialInstance);
 
+    const std::string& GetDebugName() const { return m_debugName; }
+    MaterialShaderType GetShaderType() const { return m_shaderType; }
+
   private:
     ShaderProgram m_shader;
     GpuBuffer m_materialBuffer;
 
+    std::string m_debugName;
     MaterialShaderType m_shaderType = MaterialShaderType::LitTextured;
     TextureHandle m_baseTexture;
   };

@@ -6,7 +6,6 @@
 #include "Engine/Renderer/RenderResourceHandles.h"
 #include "Engine/Renderer/Texture2D.h"
 
-
 #include <memory>
 #include <vector>
 
@@ -31,6 +30,9 @@ namespace Engine {
     MaterialHandle GetGreenMaterialHandle() const { return m_greenMaterialHandle; }
     MaterialHandle GetBlueMaterialHandle() const { return m_blueMaterialHandle; }
 
+    const char* GetMaterialDebugName(MaterialHandle handle) const;
+    MaterialShaderType GetMaterialShaderType(MaterialHandle handle) const;
+
   private:
     MeshHandle AddMesh(std::unique_ptr<Mesh> mesh);
     TextureHandle AddTexture(std::unique_ptr<Texture2D> texture);
@@ -40,6 +42,7 @@ namespace Engine {
     std::vector<std::unique_ptr<Mesh>> m_meshes;
     std::vector<std::unique_ptr<Material>> m_materials;
     std::vector<std::unique_ptr<Texture2D>> m_textures;
+
     MaterialHandle m_redMaterialHandle;
     MaterialHandle m_greenMaterialHandle;
     MaterialHandle m_blueMaterialHandle;
