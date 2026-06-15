@@ -21,6 +21,10 @@ namespace Engine {
       return false;
     }
 
+    if (!m_materialBuffer.CreateConstantBuffer(graphicsDevice, sizeof(MaterialConstants))) {
+      return false;
+    }
+
     LogInfo("Material initialized.");
     return true;
   }
@@ -29,7 +33,6 @@ namespace Engine {
 
   void Material::Bind(GraphicsDevice& graphicsDevice, RenderResourceManager& renderResources,
                       const MaterialInstance& materialInstance) {
-
     MaterialConstants constants = {};
     constants.baseColor = materialInstance.baseColor;
 
