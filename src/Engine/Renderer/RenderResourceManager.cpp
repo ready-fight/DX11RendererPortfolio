@@ -80,11 +80,11 @@ namespace Engine {
   }
 
   bool RenderResourceManager::Initialize(GraphicsDevice& graphicsDevice) {
-    TextureHandle textureA = CreateTexture(graphicsDevice, L"assets/textures/test.png");
+    TextureHandle textureA = CreateTexture(graphicsDevice, L"assets/textures/test.jpg");
 
-    TextureHandle textureB = CreateTexture(graphicsDevice, L"assets/textures/test_b.png");
+    TextureHandle textureB = CreateTexture(graphicsDevice, L"assets/textures/test_b.jpg");
 
-    TextureHandle textureC = CreateTexture(graphicsDevice, L"assets/textures/test_c.png");
+    TextureHandle textureC = CreateTexture(graphicsDevice, L"assets/textures/test_c.jpg");
 
     m_redMaterialHandle = CreateColorMaterial(graphicsDevice, textureA);
 
