@@ -7,7 +7,6 @@
 #include "Engine/Renderer/ObjLoader.h"
 #include "Engine/Renderer/Texture2D.h"
 
-
 #include <cstddef>
 
 namespace Engine {
@@ -117,7 +116,7 @@ namespace Engine {
 
     MeshData modelMeshData = {};
 
-    if (!ObjLoader::Load("assets/models/pyramid.obj", modelMeshData)) {
+    if (!ObjLoader::Load("assets/models/simple_pyramid.obj", modelMeshData)) {
       LogWarning("Failed to load OBJ model. Falling back to cube mesh data.");
 
       if (!MeshFactory::CreateCubeMeshData(modelMeshData)) {
