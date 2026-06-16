@@ -1,12 +1,12 @@
 #pragma once
 
-namespace Engine
-{
-    class GraphicsDevice;
-    class Mesh;
+namespace Engine {
+  class GraphicsDevice;
+  class Mesh;
+  struct MeshData;
 
-    namespace MeshFactory
-    {
-        bool CreateCube(GraphicsDevice& graphicsDevice, Mesh& mesh);
-    }
+  namespace MeshFactory {
+    bool CreateCubeMeshData(MeshData& meshData);
+    bool CreateCube(GraphicsDevice& graphicsDevice, Mesh& mesh);
+  }
 }

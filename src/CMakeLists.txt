@@ -61,6 +61,7 @@ add_executable(RenderSandbox WIN32
     Engine/Renderer/RenderResourceManager.cpp
     Engine/Renderer/MaterialInstance.h
     Engine/Renderer/MaterialTypes.h
+    Engine/Renderer/MeshData.h
 )
 
 target_include_directories(RenderSandbox PRIVATE

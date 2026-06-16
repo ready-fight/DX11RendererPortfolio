@@ -17,6 +17,18 @@ namespace Engine {
     return true;
   }
 
+  bool Mesh::Initialize(GraphicsDevice& graphicsDevice, const MeshData& meshData) {
+    if (!meshData.IsValid()) {
+      return false;
+    }
+
+    return Initialize(graphicsDevice,
+                      meshData.vertices.data(),
+                      static_cast<uint32_t>(meshData.vertices.size()),
+                      meshData.indices.data(),
+                      static_cast<uint32_t>(meshData.indices.size()));
+  }
+
   void Mesh::Shutdown() {
     m_indexBuffer.Shutdown();
     m_vertexBuffer.Shutdown();

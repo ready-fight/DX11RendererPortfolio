@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Renderer/GpuBuffer.h"
+#include "Engine/Renderer/MeshData.h"
 
 #include <cstdint>
 
@@ -12,6 +13,8 @@ namespace Engine {
   public:
     bool Initialize(GraphicsDevice& graphicsDevice, const VertexPositionColor* vertices, uint32_t vertexCount,
                     const uint32_t* indices, uint32_t indexCount);
+
+    bool Initialize(GraphicsDevice& graphicsDevice, const MeshData& meshData);
 
     void Shutdown();
 
