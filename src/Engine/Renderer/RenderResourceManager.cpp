@@ -1,10 +1,11 @@
 #include "Engine/Renderer/RenderResourceManager.h"
 
-#include "Engine/Renderer/MeshFactory.h"
 #include "Engine/Renderer/VertexTypes.h"
+#include "Engine/Renderer/MeshData.h"
+#include "Engine/Renderer/MeshFactory.h"
+#include "Engine/Renderer/ObjLoader.h"
 
 #include "Engine/Core/Log.h"
-#include "Engine/Renderer/ObjLoader.h"
 #include "Engine/Renderer/Texture2D.h"
 
 #include <cstddef>
@@ -106,31 +107,19 @@ namespace Engine {
 
     m_colorMaterialHandle = m_redMaterialHandle;
 
-    auto cubeMesh = std::make_unique<Mesh>();
+    m_cubeMeshHandle = CreateCubeMesh(graphicsDevice);
 
-    if (!MeshFactory::CreateCube(graphicsDevice, *cubeMesh)) {
+    if (!m_cubeMeshHandle.IsValid()) {
       return false;
     }
 
-    m_cubeMeshHandle = AddMesh(std::move(cubeMesh));
+    m_modelMeshHandle = CreateModelMesh(graphicsDevice, "assets/models/pyramid.obj");
 
-    MeshData modelMeshData = {};
+    if (!m_modelMeshHandle.IsValid()) {
+      LogWarning("Failed to create model mesh. Falling back to cube mesh.");
 
-    if (!ObjLoader::Load("assets/models/simple_pyramid.obj", modelMeshData)) {
-      LogWarning("Failed to load OBJ model. Falling back to cube mesh data.");
-
-      if (!MeshFactory::CreateCubeMeshData(modelMeshData)) {
-        return false;
-      }
+      m_modelMeshHandle = m_cubeMeshHandle;
     }
-
-    auto modelMesh = std::make_unique<Mesh>();
-
-    if (!modelMesh->Initialize(graphicsDevice, modelMeshData)) {
-      return false;
-    }
-
-    m_modelMeshHandle = AddMesh(std::move(modelMesh));
 
     return true;
   }
@@ -262,5 +251,38 @@ namespace Engine {
     }
 
     return m_materials[handle.value]->GetBaseTextureHandle();
+  }
+
+  MeshHandle RenderResourceManager::CreateCubeMesh(GraphicsDevice& graphicsDevice) {
+    MeshData meshData = {};
+
+    if (!MeshFactory::CreateCubeMeshData(meshData)) {
+      LogWarning("Failed to create cube mesh data.");
+      return {};
+    }
+
+    return CreateMeshFromData(graphicsDevice, meshData);
+  }
+
+  MeshHandle RenderResourceManager::CreateMeshFromData(GraphicsDevice& graphicsDevice, const MeshData& meshData) {
+    auto mesh = std::make_unique<Mesh>();
+
+    if (!mesh->Initialize(graphicsDevice, meshData)) {
+      LogWarning("Failed to create mesh from mesh data.");
+      return {};
+    }
+
+    return AddMesh(std::move(mesh));
+  }
+
+  MeshHandle RenderResourceManager::CreateModelMesh(GraphicsDevice& graphicsDevice, const char* filePath) {
+    MeshData meshData = {};
+
+    if (!ObjLoader::Load(filePath, meshData)) {
+      LogWarning("Failed to load model mesh.");
+      return {};
+    }
+
+    return CreateMeshFromData(graphicsDevice, meshData);
   }
 }

@@ -11,6 +11,7 @@
 
 namespace Engine {
   class GraphicsDevice;
+  struct MeshData;
 
   class RenderResourceManager final {
   public:
@@ -42,6 +43,10 @@ namespace Engine {
     uint32_t GetTextureHeight(TextureHandle handle) const;
     TextureHandle GetMaterialBaseTexture(MaterialHandle handle) const;
     MeshHandle GetModelMeshHandle() const { return m_modelMeshHandle; }
+
+    MeshHandle CreateCubeMesh(GraphicsDevice& graphicsDevice);
+    MeshHandle CreateMeshFromData(GraphicsDevice& graphicsDevice, const MeshData& meshData);
+    MeshHandle CreateModelMesh(GraphicsDevice& graphicsDevice, const char* filePath);
 
   private:
     MeshHandle AddMesh(std::unique_ptr<Mesh> mesh);
