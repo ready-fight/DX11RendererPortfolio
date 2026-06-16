@@ -4,7 +4,9 @@
 #include "Engine/Renderer/VertexTypes.h"
 
 #include "Engine/Core/Log.h"
+#include "Engine/Renderer/ObjLoader.h"
 #include "Engine/Renderer/Texture2D.h"
+
 
 #include <cstddef>
 
@@ -113,6 +115,24 @@ namespace Engine {
 
     m_cubeMeshHandle = AddMesh(std::move(cubeMesh));
 
+    MeshData modelMeshData = {};
+
+    if (!ObjLoader::Load("assets/models/pyramid.obj", modelMeshData)) {
+      LogWarning("Failed to load OBJ model. Falling back to cube mesh data.");
+
+      if (!MeshFactory::CreateCubeMeshData(modelMeshData)) {
+        return false;
+      }
+    }
+
+    auto modelMesh = std::make_unique<Mesh>();
+
+    if (!modelMesh->Initialize(graphicsDevice, modelMeshData)) {
+      return false;
+    }
+
+    m_modelMeshHandle = AddMesh(std::move(modelMesh));
+
     return true;
   }
 
@@ -141,6 +161,7 @@ namespace Engine {
 
     m_cubeMeshHandle = {};
     m_colorMaterialHandle = {};
+    m_modelMeshHandle = {};
     m_redMaterialHandle = {};
     m_greenMaterialHandle = {};
     m_blueMaterialHandle = {};

@@ -41,6 +41,7 @@ namespace Engine {
     uint32_t GetTextureWidth(TextureHandle handle) const;
     uint32_t GetTextureHeight(TextureHandle handle) const;
     TextureHandle GetMaterialBaseTexture(MaterialHandle handle) const;
+    MeshHandle GetModelMeshHandle() const { return m_modelMeshHandle; }
 
   private:
     MeshHandle AddMesh(std::unique_ptr<Mesh> mesh);
@@ -58,5 +59,6 @@ namespace Engine {
 
     MeshHandle m_cubeMeshHandle;
     MaterialHandle m_colorMaterialHandle;
+    MeshHandle m_modelMeshHandle;
   };
 }

@@ -215,7 +215,7 @@ namespace Engine {
 
     SceneObject centerCube = {};
     centerCube.name = "Center Cube";
-    centerCube.mesh = m_renderResources.GetCubeMeshHandle();
+    centerCube.mesh = m_renderResources.GetModelMeshHandle();
     centerCube.materialInstance.material = m_renderResources.GetGreenMaterialHandle();
     centerCube.transform.position = {0.0f, 0.0f, 0.0f};
     centerCube.transform.scale = {1.0f, 1.0f, 1.0f};
