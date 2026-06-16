@@ -1,9 +1,9 @@
 #include "Engine/Renderer/RenderResourceManager.h"
 
-#include "Engine/Renderer/VertexTypes.h"
 #include "Engine/Renderer/MeshData.h"
 #include "Engine/Renderer/MeshFactory.h"
 #include "Engine/Renderer/ObjLoader.h"
+#include "Engine/Renderer/VertexTypes.h"
 
 #include "Engine/Core/Log.h"
 #include "Engine/Renderer/Texture2D.h"
@@ -107,13 +107,13 @@ namespace Engine {
 
     m_colorMaterialHandle = m_redMaterialHandle;
 
-    m_cubeMeshHandle = CreateCubeMesh(graphicsDevice);
+    m_cubeMeshHandle = CreateCubeMesh(graphicsDevice, "Cube Mesh");
 
     if (!m_cubeMeshHandle.IsValid()) {
       return false;
     }
 
-    m_modelMeshHandle = CreateModelMesh(graphicsDevice, "assets/models/pyramid.obj");
+    m_modelMeshHandle = CreateModelMesh(graphicsDevice, "assets/models/pyramid.obj", "Pyramid Mesh");
 
     if (!m_modelMeshHandle.IsValid()) {
       LogWarning("Failed to create model mesh. Falling back to cube mesh.");
@@ -253,7 +253,7 @@ namespace Engine {
     return m_materials[handle.value]->GetBaseTextureHandle();
   }
 
-  MeshHandle RenderResourceManager::CreateCubeMesh(GraphicsDevice& graphicsDevice) {
+  MeshHandle RenderResourceManager::CreateCubeMesh(GraphicsDevice& graphicsDevice, const char* debugName) {
     MeshData meshData = {};
 
     if (!MeshFactory::CreateCubeMeshData(meshData)) {
@@ -261,11 +261,13 @@ namespace Engine {
       return {};
     }
 
-    return CreateMeshFromData(graphicsDevice, meshData);
+    return CreateMeshFromData(graphicsDevice, meshData, debugName);
   }
 
-  MeshHandle RenderResourceManager::CreateMeshFromData(GraphicsDevice& graphicsDevice, const MeshData& meshData) {
+  MeshHandle RenderResourceManager::CreateMeshFromData(GraphicsDevice& graphicsDevice, const MeshData& meshData,
+                                                       const char* debugName) {
     auto mesh = std::make_unique<Mesh>();
+    mesh->SetDebugName(debugName);
 
     if (!mesh->Initialize(graphicsDevice, meshData)) {
       LogWarning("Failed to create mesh from mesh data.");
@@ -275,7 +277,8 @@ namespace Engine {
     return AddMesh(std::move(mesh));
   }
 
-  MeshHandle RenderResourceManager::CreateModelMesh(GraphicsDevice& graphicsDevice, const char* filePath) {
+  MeshHandle RenderResourceManager::CreateModelMesh(GraphicsDevice& graphicsDevice, const char* filePath,
+                                                    const char* debugName) {
     MeshData meshData = {};
 
     if (!ObjLoader::Load(filePath, meshData)) {
@@ -283,6 +286,30 @@ namespace Engine {
       return {};
     }
 
-    return CreateMeshFromData(graphicsDevice, meshData);
+    return CreateMeshFromData(graphicsDevice, meshData, debugName);
+  }
+
+  const char* RenderResourceManager::GetMeshDebugName(MeshHandle handle) const {
+    if (!handle.IsValid() || handle.value >= m_meshes.size()) {
+      return "Invalid Mesh";
+    }
+
+    return m_meshes[handle.value]->GetDebugName().c_str();
+  }
+
+  uint32_t RenderResourceManager::GetMeshVertexCount(MeshHandle handle) const {
+    if (!handle.IsValid() || handle.value >= m_meshes.size()) {
+      return 0;
+    }
+
+    return m_meshes[handle.value]->GetVertexCount();
+  }
+
+  uint32_t RenderResourceManager::GetMeshIndexCount(MeshHandle handle) const {
+    if (!handle.IsValid() || handle.value >= m_meshes.size()) {
+      return 0;
+    }
+
+    return m_meshes[handle.value]->GetIndexCount();
   }
 }

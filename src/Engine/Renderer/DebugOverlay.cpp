@@ -99,6 +99,14 @@ namespace Engine {
 
         const char* currentMaterialName = renderResources.GetMaterialDebugName(materialHandle);
 
+        const MeshHandle meshHandle = object.mesh;
+
+        ImGui::Text("Mesh: %s", renderResources.GetMeshDebugName(meshHandle));
+
+        ImGui::Text("Mesh Vertices: %u", renderResources.GetMeshVertexCount(meshHandle));
+
+        ImGui::Text("Mesh Indices: %u", renderResources.GetMeshIndexCount(meshHandle));
+
         if (ImGui::BeginCombo("Material", currentMaterialName)) {
           for (uint32_t materialIndex = 0; materialIndex < materialCount; ++materialIndex) {
             MaterialHandle candidateHandle = renderResources.GetMaterialHandleAt(materialIndex);

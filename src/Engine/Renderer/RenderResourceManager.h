@@ -44,9 +44,13 @@ namespace Engine {
     TextureHandle GetMaterialBaseTexture(MaterialHandle handle) const;
     MeshHandle GetModelMeshHandle() const { return m_modelMeshHandle; }
 
-    MeshHandle CreateCubeMesh(GraphicsDevice& graphicsDevice);
-    MeshHandle CreateMeshFromData(GraphicsDevice& graphicsDevice, const MeshData& meshData);
-    MeshHandle CreateModelMesh(GraphicsDevice& graphicsDevice, const char* filePath);
+    MeshHandle CreateCubeMesh(GraphicsDevice& graphicsDevice, const char* debugName);
+    MeshHandle CreateMeshFromData(GraphicsDevice& graphicsDevice, const MeshData& meshData, const char* debugName);
+    MeshHandle CreateModelMesh(GraphicsDevice& graphicsDevice, const char* filePath, const char* debugName);
+
+    const char* GetMeshDebugName(MeshHandle handle) const;
+    uint32_t GetMeshVertexCount(MeshHandle handle) const;
+    uint32_t GetMeshIndexCount(MeshHandle handle) const;
 
   private:
     MeshHandle AddMesh(std::unique_ptr<Mesh> mesh);

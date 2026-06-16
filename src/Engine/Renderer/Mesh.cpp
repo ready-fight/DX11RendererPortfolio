@@ -6,6 +6,10 @@
 namespace Engine {
   bool Mesh::Initialize(GraphicsDevice& graphicsDevice, const VertexPositionColor* vertices, uint32_t vertexCount,
                         const uint32_t* indices, uint32_t indexCount) {
+
+    m_vertexCount = vertexCount;
+    m_indexCount = indexCount;
+
     if (!m_vertexBuffer.CreateVertexBuffer(graphicsDevice, vertices, sizeof(VertexPositionColor), vertexCount)) {
       return false;
     }
@@ -18,6 +22,7 @@ namespace Engine {
   }
 
   bool Mesh::Initialize(GraphicsDevice& graphicsDevice, const MeshData& meshData) {
+
     if (!meshData.IsValid()) {
       return false;
     }
@@ -32,6 +37,10 @@ namespace Engine {
   void Mesh::Shutdown() {
     m_indexBuffer.Shutdown();
     m_vertexBuffer.Shutdown();
+
+    m_debugName = "Unnamed Mesh";
+    m_vertexCount = 0;
+    m_indexCount = 0;
   }
 
   void Mesh::Bind(GraphicsDevice& graphicsDevice) {
