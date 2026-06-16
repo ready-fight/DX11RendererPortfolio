@@ -87,6 +87,14 @@ namespace Engine {
 
         ImGui::Text("Shader Type: %s", ToString(shaderType));
 
+        const TextureHandle textureHandle = renderResources.GetMaterialBaseTexture(materialHandle);
+
+        ImGui::Text("Texture: %s", renderResources.GetTextureDebugName(textureHandle));
+
+        ImGui::Text("Texture Size: %u x %u",
+                    renderResources.GetTextureWidth(textureHandle),
+                    renderResources.GetTextureHeight(textureHandle));
+
         const uint32_t materialCount = renderResources.GetMaterialCount();
 
         const char* currentMaterialName = renderResources.GetMaterialDebugName(materialHandle);

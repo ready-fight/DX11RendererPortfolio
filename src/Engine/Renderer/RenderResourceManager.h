@@ -17,7 +17,7 @@ namespace Engine {
     bool Initialize(GraphicsDevice& graphicsDevice);
     void Shutdown();
 
-    TextureHandle CreateTexture(GraphicsDevice& graphicsDevice, const wchar_t* filePath);
+    TextureHandle CreateTexture(GraphicsDevice& graphicsDevice, const wchar_t* filePath, const char* debugName);
     MaterialHandle CreateMaterial(GraphicsDevice& graphicsDevice, const MaterialDesc& desc);
 
     Mesh* ResolveMesh(MeshHandle handle);
@@ -35,13 +35,12 @@ namespace Engine {
 
     uint32_t GetMaterialCount() const { return static_cast<uint32_t>(m_materials.size()); }
 
-    MaterialHandle GetMaterialHandleAt(uint32_t index) const {
-      if (index >= m_materials.size()) {
-        return {};
-      }
+    MaterialHandle GetMaterialHandleAt(uint32_t index) const;
 
-      return MaterialHandle{index};
-    }
+    const char* GetTextureDebugName(TextureHandle handle) const;
+    uint32_t GetTextureWidth(TextureHandle handle) const;
+    uint32_t GetTextureHeight(TextureHandle handle) const;
+    TextureHandle GetMaterialBaseTexture(MaterialHandle handle) const;
 
   private:
     MeshHandle AddMesh(std::unique_ptr<Mesh> mesh);

@@ -25,6 +25,8 @@ namespace Engine {
     const std::string& GetDebugName() const { return m_debugName; }
     MaterialShaderType GetShaderType() const { return m_shaderType; }
 
+    TextureHandle GetBaseTextureHandle() const { return m_baseTexture; }
+
   private:
     ShaderProgram m_shader;
     GpuBuffer m_materialBuffer;

@@ -46,8 +46,11 @@ namespace Engine {
     }
   }
 
-  TextureHandle RenderResourceManager::CreateTexture(GraphicsDevice& graphicsDevice, const wchar_t* filePath) {
+  TextureHandle RenderResourceManager::CreateTexture(GraphicsDevice& graphicsDevice, const wchar_t* filePath,
+                                                     const char* debugName) {
     auto texture = std::make_unique<Texture2D>();
+
+    texture->SetDebugName(debugName);
 
     if (!texture->LoadFromFile(graphicsDevice, filePath)) {
       LogWarning("Failed to load texture file. Falling back to checkerboard texture.");
@@ -75,11 +78,11 @@ namespace Engine {
   }
 
   bool RenderResourceManager::Initialize(GraphicsDevice& graphicsDevice) {
-    TextureHandle textureA = CreateTexture(graphicsDevice, L"assets/textures/test.jpg");
+    TextureHandle textureA = CreateTexture(graphicsDevice, L"assets/textures/test.jpg", "Test Texture A");
 
-    TextureHandle textureB = CreateTexture(graphicsDevice, L"assets/textures/test_b.png");
+    TextureHandle textureB = CreateTexture(graphicsDevice, L"assets/textures/test_b.png", "Test Texture B");
 
-    TextureHandle textureC = CreateTexture(graphicsDevice, L"assets/textures/test_c.jpg");
+    TextureHandle textureC = CreateTexture(graphicsDevice, L"assets/textures/test_c.jpg", "Test Texture C");
 
     MaterialDesc redMaterialDesc = {};
     redMaterialDesc.debugName = "Red Lit Material";
@@ -199,5 +202,45 @@ namespace Engine {
     }
 
     return m_materials[handle.value]->GetShaderType();
+  }
+
+  MaterialHandle RenderResourceManager::GetMaterialHandleAt(uint32_t index) const {
+    if (index >= m_materials.size()) {
+      return {};
+    }
+
+    return MaterialHandle{index};
+  }
+
+  const char* RenderResourceManager::GetTextureDebugName(TextureHandle handle) const {
+    if (!handle.IsValid() || handle.value >= m_textures.size()) {
+      return "Invalid Texture";
+    }
+
+    return m_textures[handle.value]->GetDebugName().c_str();
+  }
+
+  uint32_t RenderResourceManager::GetTextureWidth(TextureHandle handle) const {
+    if (!handle.IsValid() || handle.value >= m_textures.size()) {
+      return 0;
+    }
+
+    return m_textures[handle.value]->GetWidth();
+  }
+
+  uint32_t RenderResourceManager::GetTextureHeight(TextureHandle handle) const {
+    if (!handle.IsValid() || handle.value >= m_textures.size()) {
+      return 0;
+    }
+
+    return m_textures[handle.value]->GetHeight();
+  }
+
+  TextureHandle RenderResourceManager::GetMaterialBaseTexture(MaterialHandle handle) const {
+    if (!handle.IsValid() || handle.value >= m_materials.size()) {
+      return {};
+    }
+
+    return m_materials[handle.value]->GetBaseTextureHandle();
   }
 }

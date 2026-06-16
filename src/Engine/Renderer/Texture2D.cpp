@@ -7,7 +7,6 @@
 #include <vector>
 #include <wincodec.h>
 
-
 namespace Engine {
 
   bool Texture2D::LoadFromFile(GraphicsDevice& graphicsDevice, const wchar_t* filePath) {
@@ -60,6 +59,9 @@ namespace Engine {
     if (!DX_CHECK(hr)) {
       return false;
     }
+
+    m_width = width;
+    m_height = height;
 
     std::vector<uint8_t> pixels;
     pixels.resize(static_cast<size_t>(width) * static_cast<size_t>(height) * 4);
@@ -121,6 +123,10 @@ namespace Engine {
   }
 
   bool Texture2D::CreateCheckerboard(GraphicsDevice& graphicsDevice, uint32_t width, uint32_t height) {
+
+    m_width = width;
+    m_height = height;
+
     std::vector<uint32_t> pixels;
     pixels.resize(static_cast<size_t>(width) * static_cast<size_t>(height));
 
@@ -186,6 +192,10 @@ namespace Engine {
     m_samplerState.Reset();
     m_shaderResourceView.Reset();
     m_texture.Reset();
+
+    m_width = 0;
+    m_height = 0;
+    m_debugName = "Unnamed Texture";
   }
 
   void Texture2D::BindPS(GraphicsDevice& graphicsDevice, uint32_t textureSlot, uint32_t samplerSlot) {
