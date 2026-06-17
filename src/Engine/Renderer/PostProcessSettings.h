@@ -1,13 +1,14 @@
 // src/Engine/Renderer/PostProcessSettings.h
 #pragma once
 
-namespace Engine
-{
-    struct PostProcessSettings final
-    {
-        float grayscaleAmount = 0.0f;
-        float exposure = 1.0f;
-        float contrast = 1.0f;
-        float vignetteAmount = 0.0f;
-    };
+namespace Engine {
+  struct PostProcessSettings final {
+    float grayscaleAmount = 0.0f;
+    float exposure = 1.0f;
+    float contrast = 1.0f;
+    float vignetteAmount = 0.0f;
+    
+    float depthVisualizationAmount = 0.0f;
+    float depthVisualizationRange = 20.0f;
+  };
 }

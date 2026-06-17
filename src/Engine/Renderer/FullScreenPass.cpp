@@ -1,5 +1,6 @@
 #include "Engine/Renderer/FullscreenPass.h"
 
+#include "Engine/Renderer/DepthStencilBuffer.h"
 #include "Engine/Renderer/DxHelpers.h"
 #include "Engine/Renderer/GraphicsDevice.h"
 #include "Engine/Renderer/RenderTarget.h"
@@ -10,6 +11,7 @@ namespace Engine {
 
   struct PostProcessConstants {
     DirectX::XMFLOAT4 settings;
+    DirectX::XMFLOAT4 debugSettings;
   };
 
   static_assert(sizeof(PostProcessConstants) % 16 == 0);
@@ -43,30 +45,34 @@ namespace Engine {
   }
 
   void FullscreenPass::Render(GraphicsDevice& graphicsDevice, RenderTarget& sourceTexture,
-                              const PostProcessSettings& settings) {
+                              DepthStencilBuffer& sceneDepth, const PostProcessSettings& settings) {
     ID3D11DeviceContext* context = graphicsDevice.GetContext();
 
     PostProcessConstants constants = {};
     constants.settings =
         DirectX::XMFLOAT4(settings.grayscaleAmount, settings.exposure, settings.contrast, settings.vignetteAmount);
 
+    constants.debugSettings =
+        DirectX::XMFLOAT4(settings.depthVisualizationAmount, 0.1f, 100.0f, settings.depthVisualizationRange);
+
     m_postProcessBuffer.Update(graphicsDevice, &constants, sizeof(constants));
 
     m_shader.Bind(graphicsDevice);
     m_postProcessBuffer.BindConstantBufferPS(graphicsDevice, 0);
 
-    ID3D11ShaderResourceView* shaderResources[] = {sourceTexture.GetShaderResourceView()};
+    ID3D11ShaderResourceView* shaderResources[] = {sourceTexture.GetShaderResourceView(),
+                                                   sceneDepth.GetShaderResourceView()};
 
     ID3D11SamplerState* samplers[] = {m_samplerState.Get()};
 
-    context->PSSetShaderResources(0, 1, shaderResources);
+    context->PSSetShaderResources(0, 2, shaderResources);
     context->PSSetSamplers(0, 1, samplers);
 
     context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     graphicsDevice.Draw(3, 0);
 
-    ID3D11ShaderResourceView* nullShaderResources[] = {nullptr};
+    ID3D11ShaderResourceView* nullShaderResources[] = {nullptr, nullptr};
 
-    context->PSSetShaderResources(0, 1, nullShaderResources);
+    context->PSSetShaderResources(0, 2, nullShaderResources);
   }
 }

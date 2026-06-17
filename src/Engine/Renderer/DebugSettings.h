@@ -8,5 +8,6 @@ namespace Engine
         bool grayscaleEnabled = false;
         bool vignetteEnabled = false;
         bool normalVisualizationEnabled = false;
+        bool depthVisualizationEnabled = false;
     };
 }

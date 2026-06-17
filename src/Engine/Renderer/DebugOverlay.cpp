@@ -63,10 +63,12 @@ namespace Engine {
     ImGui::Checkbox("Wireframe (F1)", &debugSettings.wireframeEnabled);
 
     ImGui::Separator();
-    
+
     ImGui::Text("Post Effects");
     ImGui::Checkbox("Grayscale (F2)", &debugSettings.grayscaleEnabled);
     ImGui::Checkbox("Vignette (F3)", &debugSettings.vignetteEnabled);
+    ImGui::Checkbox("Depth Visualization (F5)", &debugSettings.depthVisualizationEnabled);
+    ImGui::SliderFloat("Depth Visualization Range", &postProcessSettings.depthVisualizationRange, 1.0f, 100.0f);
 
     ImGui::Separator();
     ImGui::Text("Normal Visualization Override");
