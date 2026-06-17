@@ -15,7 +15,7 @@ namespace Engine {
       MessageBoxW(nullptr, L"Failed to initialize COM.", L"Error", MB_OK);
       return false;
     }
-    
+
     WindowDesc windowDesc = {};
     windowDesc.title = L"DX11 Renderer Portfolio";
     windowDesc.width = 1280;
@@ -136,6 +136,13 @@ namespace Engine {
       LogInfo(m_debugSettings.vignetteEnabled ? "Vignette post effect enabled." : "Vignette post effect disabled.");
     }
 
+    if (m_keyboardInput.WasPressed(VK_F4)) {
+      m_debugSettings.normalVisualizationEnabled = !m_debugSettings.normalVisualizationEnabled;
+
+      LogInfo(m_debugSettings.vignetteEnabled ? "Normal Visualization post effect enabled."
+                                              : "Normal Visualization post effect disabled.");
+    }
+
     const float orbitSpeed = 1.5f * deltaSeconds;
     const float zoomSpeed = 3.0f * deltaSeconds;
 
@@ -180,7 +187,12 @@ namespace Engine {
 
     m_renderStates.Apply(m_graphicsDevice, m_debugSettings.wireframeEnabled);
 
-    m_meshPass.Render(m_graphicsDevice, m_renderResources, m_camera, m_scene, m_timer.GetTotalSeconds());
+    m_meshPass.Render(m_graphicsDevice,
+                      m_renderResources,
+                      m_camera,
+                      m_scene,
+                      m_timer.GetTotalSeconds(),
+                      m_debugSettings.normalVisualizationEnabled);
 
     m_graphicsDevice.SetBackBufferRenderTarget();
 

@@ -60,16 +60,21 @@ namespace Engine {
     ImGui::Separator();
 
     ImGui::Text("Render States");
-    ImGui::Checkbox("Wireframe", &debugSettings.wireframeEnabled);
+    ImGui::Checkbox("Wireframe (F1)", &debugSettings.wireframeEnabled);
+
+    ImGui::Separator();
+    
+    ImGui::Text("Post Effects");
+    ImGui::Checkbox("Grayscale (F2)", &debugSettings.grayscaleEnabled);
+    ImGui::Checkbox("Vignette (F3)", &debugSettings.vignetteEnabled);
+
+    ImGui::Separator();
+    ImGui::Text("Normal Visualization Override");
+    ImGui::Checkbox("Normal Visualization (F4)", &debugSettings.normalVisualizationEnabled);
 
     ImGui::Separator();
 
-    ImGui::Text("Post Effects");
-    ImGui::Checkbox("Grayscale", &debugSettings.grayscaleEnabled);
-    ImGui::Checkbox("Vignette", &debugSettings.vignetteEnabled);
-
     ImGui::SliderFloat("Exposure", &postProcessSettings.exposure, 0.1f, 3.0f);
-
     ImGui::SliderFloat("Contrast", &postProcessSettings.contrast, 0.1f, 3.0f);
 
     ImGui::Separator();

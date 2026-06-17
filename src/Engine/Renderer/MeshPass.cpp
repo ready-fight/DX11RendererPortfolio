@@ -53,7 +53,7 @@ namespace Engine {
   }
 
   void MeshPass::Render(GraphicsDevice& graphicsDevice, RenderResourceManager& renderResources, const Camera& camera,
-                        Scene& scene, float totalSeconds) {
+                        Scene& scene, float totalSeconds, bool forceNormalVisualization) {
     using namespace DirectX;
 
     const XMMATRIX viewProjection = camera.GetViewProjectionMatrix();
@@ -97,7 +97,13 @@ namespace Engine {
     for (SceneObject& object : scene.GetObjects()) {
 
       Mesh* mesh = renderResources.ResolveMesh(object.mesh);
-      Material* material = renderResources.ResolveMaterial(object.materialInstance.material);
+      MaterialInstance activeMaterialInstance = object.materialInstance;
+
+      if (forceNormalVisualization) {
+        activeMaterialInstance.material = renderResources.GetNormalVisualizerMaterialHandle();
+      }
+
+      Material* material = renderResources.ResolveMaterial(activeMaterialInstance.material);
 
       if (!object.enabled || !mesh || !material) {
         continue;
@@ -115,7 +121,7 @@ namespace Engine {
 
       m_transformBuffer.Update(graphicsDevice, &constants, sizeof(constants));
 
-      material->Bind(graphicsDevice, renderResources, object.materialInstance);
+      material->Bind(graphicsDevice, renderResources, activeMaterialInstance);
       m_transformBuffer.BindConstantBufferVS(graphicsDevice, 0);
       m_lightBuffer.BindConstantBufferPS(graphicsDevice, 2);
 
