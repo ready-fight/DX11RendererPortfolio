@@ -18,6 +18,8 @@ namespace Engine {
     DirectX::XMMATRIX GetProjectionMatrix() const;
     DirectX::XMMATRIX GetViewProjectionMatrix() const;
 
+    const DirectX::XMFLOAT3& GetPosition() const { return m_position; }
+
   private:
     void RecalculateOrbitPosition();
 

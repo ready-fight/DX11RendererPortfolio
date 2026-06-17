@@ -24,6 +24,7 @@ namespace Engine {
 
     struct MaterialConstants {
       DirectX::XMFLOAT4 baseColor;
+      DirectX::XMFLOAT4 specular;
     };
 
     static_assert(sizeof(MaterialConstants) % 16 == 0);
@@ -54,6 +55,7 @@ namespace Engine {
                       const MaterialInstance& materialInstance) {
     MaterialConstants constants = {};
     constants.baseColor = materialInstance.baseColor;
+    constants.specular = {materialInstance.specularStrength, materialInstance.specularPower, 0.0f, 0.0f};
 
     m_materialBuffer.Update(graphicsDevice, &constants, sizeof(constants));
 

@@ -174,6 +174,10 @@ namespace Engine {
 
         ImGui::ColorEdit4("Base Color", &object.materialInstance.baseColor.x);
 
+        ImGui::SliderFloat("Specular Strength", &object.materialInstance.specularStrength, 0.0f, 2.0f);
+
+        ImGui::SliderFloat("Specular Power", &object.materialInstance.specularPower, 1.0f, 128.0f);
+
         ImGui::DragFloat3("Position", &object.transform.position.x, 0.05f);
 
         ImGui::DragFloat3("Scale", &object.transform.scale.x, 0.05f, 0.1f, 5.0f);

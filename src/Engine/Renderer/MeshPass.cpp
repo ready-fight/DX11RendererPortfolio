@@ -4,8 +4,8 @@
 #include "Engine/Renderer/Material.h"
 #include "Engine/Renderer/Mesh.h"
 #include "Engine/Renderer/RenderResourceManager.h"
-#include "Engine/Scene/Scene.h"
 #include "Engine/Scene/DirectionalLight.h"
+#include "Engine/Scene/Scene.h"
 
 #include "Engine/Core/Log.h"
 
@@ -26,6 +26,7 @@ namespace Engine {
       DirectX::XMFLOAT4 lightDirection;
       DirectX::XMFLOAT4 lightColor;
       DirectX::XMFLOAT4 ambientColor;
+      DirectX::XMFLOAT4 cameraPosition;
     };
 
     static_assert(sizeof(TransformConstants) % 16 == 0);
@@ -86,6 +87,10 @@ namespace Engine {
                                    sceneLight.ambientColor.y * sceneLight.ambientIntensity,
                                    sceneLight.ambientColor.z * sceneLight.ambientIntensity,
                                    1.0f};
+
+    const DirectX::XMFLOAT3 cameraPosition = camera.GetPosition();
+
+    lightConstants.cameraPosition = {cameraPosition.x, cameraPosition.y, cameraPosition.z, 1.0f};
 
     m_lightBuffer.Update(graphicsDevice, &lightConstants, sizeof(lightConstants));
 
