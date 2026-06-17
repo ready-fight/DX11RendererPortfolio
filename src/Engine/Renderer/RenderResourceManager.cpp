@@ -101,9 +101,20 @@ namespace Engine {
     blueMaterialDesc.shaderType = MaterialShaderType::LitTextured;
     blueMaterialDesc.baseTexture = textureC;
 
+    MaterialDesc normalVisualizerDesc = {};
+    normalVisualizerDesc.debugName = "Normal Visualizer Material";
+    normalVisualizerDesc.shaderType = MaterialShaderType::NormalVisualizer;
+    normalVisualizerDesc.baseTexture = textureA;
+
     m_redMaterialHandle = CreateMaterial(graphicsDevice, redMaterialDesc);
     m_greenMaterialHandle = CreateMaterial(graphicsDevice, greenMaterialDesc);
     m_blueMaterialHandle = CreateMaterial(graphicsDevice, blueMaterialDesc);
+    m_normalVisualizerMaterialHandle = CreateMaterial(graphicsDevice, normalVisualizerDesc);
+
+    if (!m_redMaterialHandle.IsValid() || !m_greenMaterialHandle.IsValid() || !m_blueMaterialHandle.IsValid() ||
+        !m_normalVisualizerMaterialHandle.IsValid()) {
+      return false;
+    }
 
     m_colorMaterialHandle = m_redMaterialHandle;
 

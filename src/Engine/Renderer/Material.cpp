@@ -17,6 +17,9 @@ namespace Engine {
         case MaterialShaderType::UnlitTextured:
           return L"assets/shaders/UnlitTextured.hlsl";
 
+        case MaterialShaderType::NormalVisualizer:
+          return L"assets/shaders/NormalVisualizer.hlsl";
+
         default:
           return L"assets/shaders/Color.hlsl";
       }

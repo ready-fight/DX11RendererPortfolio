@@ -54,6 +54,8 @@ namespace Engine {
     uint32_t GetMeshVertexCount(MeshHandle handle) const;
     uint32_t GetMeshIndexCount(MeshHandle handle) const;
 
+    MaterialHandle GetNormalVisualizerMaterialHandle() const { return m_normalVisualizerMaterialHandle; }
+
   private:
     MeshHandle AddMesh(std::unique_ptr<Mesh> mesh);
     TextureHandle AddTexture(std::unique_ptr<Texture2D> texture);
@@ -71,5 +73,7 @@ namespace Engine {
     MeshHandle m_cubeMeshHandle;
     MaterialHandle m_colorMaterialHandle;
     MeshHandle m_modelMeshHandle;
+
+    MaterialHandle m_normalVisualizerMaterialHandle;
   };
 }

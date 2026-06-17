@@ -4,7 +4,7 @@
 #include <string>
 
 namespace Engine {
-  enum class MaterialShaderType { LitTextured, UnlitTextured };
+  enum class MaterialShaderType { LitTextured, UnlitTextured, NormalVisualizer };
 
   inline const char* ToString(MaterialShaderType shaderType) {
     switch (shaderType) {
@@ -13,6 +13,9 @@ namespace Engine {
 
       case MaterialShaderType::UnlitTextured:
         return "Unlit Textured";
+
+      case MaterialShaderType::NormalVisualizer:
+        return "Normal Visualizer";
 
       default:
         return "Unknown";
