@@ -2,6 +2,8 @@
 #include "Engine/Renderer/GraphicsDevice.h"
 #include "Engine/Renderer/MaterialTypes.h"
 #include "Engine/Renderer/RenderResourceManager.h"
+#include "Engine/Scene/DirectionalLight.h"
+#include "Engine/Scene/Scene.h"
 
 #include <Windows.h>
 
@@ -45,8 +47,7 @@ namespace Engine {
   }
 
   void DebugOverlay::Draw(DebugSettings& debugSettings, PostProcessSettings& postProcessSettings,
-                          const RenderStats& renderStats, const RenderResourceManager& renderResources,
-                          std::vector<SceneObject>& sceneObjects) {
+                          const RenderStats& renderStats, const RenderResourceManager& renderResources, Scene& scene) {
 
     ImGui::Begin("Renderer Debug", nullptr, ImGuiWindowFlags_NoMove);
 
@@ -74,6 +75,22 @@ namespace Engine {
     ImGui::Separator();
 
     ImGui::Text("Scene Objects");
+
+    std::vector<SceneObject>& sceneObjects = scene.GetObjects();
+
+    if (ImGui::CollapsingHeader("Lighting", ImGuiTreeNodeFlags_DefaultOpen)) {
+      DirectionalLight& light = scene.GetDirectionalLight();
+
+      ImGui::DragFloat3("Light Direction", &light.direction.x, 0.05f, -1.0f, 1.0f);
+
+      ImGui::ColorEdit3("Light Color", &light.color.x);
+
+      ImGui::SliderFloat("Light Intensity", &light.intensity, 0.0f, 5.0f);
+
+      ImGui::ColorEdit3("Ambient Color", &light.ambientColor.x);
+
+      ImGui::SliderFloat("Ambient Intensity", &light.ambientIntensity, 0.0f, 1.0f);
+    }
 
     for (SceneObject& object : sceneObjects) {
       ImGui::PushID(object.name.c_str());
@@ -128,7 +145,7 @@ namespace Engine {
         ImGui::Text("Mesh Indices: %u", renderResources.GetMeshIndexCount(meshHandle));
 
         const uint32_t meshCount = renderResources.GetMeshCount();
-        
+
         const char* currentMeshName = renderResources.GetMeshDebugName(meshHandle);
 
         if (ImGui::BeginCombo("Mesh", currentMeshName)) {

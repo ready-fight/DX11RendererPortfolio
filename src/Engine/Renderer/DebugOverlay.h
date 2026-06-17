@@ -11,6 +11,7 @@
 namespace Engine {
   class GraphicsDevice;
   class RenderResourceManager;
+  class Scene;
 
   class DebugOverlay final {
   public:
@@ -18,8 +19,9 @@ namespace Engine {
     void Shutdown();
 
     void BeginFrame();
-    void Draw(DebugSettings& debugSettings, PostProcessSettings& postProcessSettings, const RenderStats& renderStats, const RenderResourceManager& renderResources,
-              std::vector<SceneObject>& sceneObjects);
+    void Draw(DebugSettings& debugSettings, PostProcessSettings& postProcessSettings, const RenderStats& renderStats,
+              const RenderResourceManager& renderResources, Scene& scene);
+    ;
     void EndFrame();
   };
 }

@@ -193,7 +193,7 @@ namespace Engine {
     m_debugOverlay.BeginFrame();
 
     m_debugOverlay.Draw(
-        m_debugSettings, m_postProcessSettings, m_graphicsDevice.GetRenderStats(), m_renderResources, m_scene.GetObjects());
+        m_debugSettings, m_postProcessSettings, m_graphicsDevice.GetRenderStats(), m_renderResources, m_scene);
 
     m_debugOverlay.EndFrame();
 

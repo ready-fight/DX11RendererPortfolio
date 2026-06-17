@@ -5,6 +5,7 @@
 #include "Engine/Renderer/Mesh.h"
 #include "Engine/Renderer/RenderResourceManager.h"
 #include "Engine/Scene/Scene.h"
+#include "Engine/Scene/DirectionalLight.h"
 
 #include "Engine/Core/Log.h"
 
@@ -62,10 +63,29 @@ namespace Engine {
 
     context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+    const DirectionalLight& sceneLight = scene.GetDirectionalLight();
+
+    DirectX::XMVECTOR lightDirection = DirectX::XMLoadFloat3(&sceneLight.direction);
+
+    lightDirection = DirectX::XMVector3Normalize(lightDirection);
+
+    DirectX::XMFLOAT3 normalizedLightDirection = {};
+    DirectX::XMStoreFloat3(&normalizedLightDirection, lightDirection);
+
     LightConstants lightConstants = {};
-    lightConstants.lightDirection = {-0.4f, -1.0f, 0.3f, 0.0f};
-    lightConstants.lightColor = {0.9f, 0.9f, 0.85f, 1.0f};
-    lightConstants.ambientColor = {0.18f, 0.18f, 0.22f, 1.0f};
+
+    lightConstants.lightDirection = {
+        normalizedLightDirection.x, normalizedLightDirection.y, normalizedLightDirection.z, 0.0f};
+
+    lightConstants.lightColor = {sceneLight.color.x * sceneLight.intensity,
+                                 sceneLight.color.y * sceneLight.intensity,
+                                 sceneLight.color.z * sceneLight.intensity,
+                                 1.0f};
+
+    lightConstants.ambientColor = {sceneLight.ambientColor.x * sceneLight.ambientIntensity,
+                                   sceneLight.ambientColor.y * sceneLight.ambientIntensity,
+                                   sceneLight.ambientColor.z * sceneLight.ambientIntensity,
+                                   1.0f};
 
     m_lightBuffer.Update(graphicsDevice, &lightConstants, sizeof(lightConstants));
 

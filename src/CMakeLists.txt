@@ -64,6 +64,7 @@ add_executable(RenderSandbox WIN32
     Engine/Renderer/MeshData.h
     Engine/Renderer/ObjLoader.h
     Engine/Renderer/ObjLoader.cpp
+    Engine/Scene/DirectionalLight.h
 )
 
 target_include_directories(RenderSandbox PRIVATE
