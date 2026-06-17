@@ -35,8 +35,10 @@ namespace Engine {
     MaterialShaderType GetMaterialShaderType(MaterialHandle handle) const;
 
     uint32_t GetMaterialCount() const { return static_cast<uint32_t>(m_materials.size()); }
+    uint32_t GetMeshCount() const { return static_cast<uint32_t>(m_meshes.size()); }
 
     MaterialHandle GetMaterialHandleAt(uint32_t index) const;
+    MeshHandle GetMeshHandleAt(uint32_t index) const;
 
     const char* GetTextureDebugName(TextureHandle handle) const;
     uint32_t GetTextureWidth(TextureHandle handle) const;

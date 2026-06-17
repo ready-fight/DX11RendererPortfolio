@@ -99,14 +99,6 @@ namespace Engine {
 
         const char* currentMaterialName = renderResources.GetMaterialDebugName(materialHandle);
 
-        const MeshHandle meshHandle = object.mesh;
-
-        ImGui::Text("Mesh: %s", renderResources.GetMeshDebugName(meshHandle));
-
-        ImGui::Text("Mesh Vertices: %u", renderResources.GetMeshVertexCount(meshHandle));
-
-        ImGui::Text("Mesh Indices: %u", renderResources.GetMeshIndexCount(meshHandle));
-
         if (ImGui::BeginCombo("Material", currentMaterialName)) {
           for (uint32_t materialIndex = 0; materialIndex < materialCount; ++materialIndex) {
             MaterialHandle candidateHandle = renderResources.GetMaterialHandleAt(materialIndex);
@@ -117,6 +109,38 @@ namespace Engine {
 
             if (ImGui::Selectable(candidateName, isSelected)) {
               object.materialInstance.material = candidateHandle;
+            }
+
+            if (isSelected) {
+              ImGui::SetItemDefaultFocus();
+            }
+          }
+
+          ImGui::EndCombo();
+        }
+
+        const MeshHandle meshHandle = object.mesh;
+
+        ImGui::Text("Mesh: %s", renderResources.GetMeshDebugName(meshHandle));
+
+        ImGui::Text("Mesh Vertices: %u", renderResources.GetMeshVertexCount(meshHandle));
+
+        ImGui::Text("Mesh Indices: %u", renderResources.GetMeshIndexCount(meshHandle));
+
+        const uint32_t meshCount = renderResources.GetMeshCount();
+        
+        const char* currentMeshName = renderResources.GetMeshDebugName(meshHandle);
+
+        if (ImGui::BeginCombo("Mesh", currentMeshName)) {
+          for (uint32_t meshIndex = 0; meshIndex < meshCount; ++meshIndex) {
+            MeshHandle candidateHandle = renderResources.GetMeshHandleAt(meshIndex);
+
+            const bool isSelected = candidateHandle.value == object.mesh.value;
+
+            const char* candidateName = renderResources.GetMeshDebugName(candidateHandle);
+
+            if (ImGui::Selectable(candidateName, isSelected)) {
+              object.mesh = candidateHandle;
             }
 
             if (isSelected) {

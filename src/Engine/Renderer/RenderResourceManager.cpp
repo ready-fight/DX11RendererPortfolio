@@ -221,6 +221,14 @@ namespace Engine {
     return MaterialHandle{index};
   }
 
+  MeshHandle RenderResourceManager::GetMeshHandleAt(uint32_t index) const {
+    if (index >= m_meshes.size()) {
+      return {};
+    }
+
+    return MeshHandle{index};
+  }
+
   const char* RenderResourceManager::GetTextureDebugName(TextureHandle handle) const {
     if (!handle.IsValid() || handle.value >= m_textures.size()) {
       return "Invalid Texture";
