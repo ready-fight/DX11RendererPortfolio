@@ -67,12 +67,28 @@ namespace Engine {
     ImGui::Text("Post Effects");
     ImGui::Checkbox("Grayscale (F2)", &debugSettings.grayscaleEnabled);
     ImGui::Checkbox("Vignette (F3)", &debugSettings.vignetteEnabled);
-    ImGui::Checkbox("Depth Visualization (F5)", &debugSettings.depthVisualizationEnabled);
-    ImGui::SliderFloat("Depth Visualization Range", &postProcessSettings.depthVisualizationRange, 1.0f, 100.0f);
 
     ImGui::Separator();
-    ImGui::Text("Normal Visualization Override");
-    ImGui::Checkbox("Normal Visualization (F4)", &debugSettings.normalVisualizationEnabled);
+
+    ImGui::Text("Debug View: %s", ToString(debugSettings.debugViewMode));
+
+    if (ImGui::Button("None")) {
+      debugSettings.debugViewMode = DebugViewMode::None;
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Normals")) {
+      debugSettings.debugViewMode = DebugViewMode::Normals;
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Depth")) {
+      debugSettings.debugViewMode = DebugViewMode::Depth;
+    }
+
+    ImGui::SliderFloat("Depth Visualization Range", &postProcessSettings.depthVisualizationRange, 1.0f, 100.0f);
 
     ImGui::Separator();
 

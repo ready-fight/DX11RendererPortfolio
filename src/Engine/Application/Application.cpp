@@ -137,17 +137,17 @@ namespace Engine {
     }
 
     if (m_keyboardInput.WasPressed(VK_F4)) {
-      m_debugSettings.normalVisualizationEnabled = !m_debugSettings.normalVisualizationEnabled;
+      m_debugSettings.debugViewMode =
+          m_debugSettings.debugViewMode == DebugViewMode::Normals ? DebugViewMode::None : DebugViewMode::Normals;
 
-      LogInfo(m_debugSettings.vignetteEnabled ? "Normal Visualization override enabled."
-                                              : "Normal Visualization override disabled.");
+      // TODO: Add LogInfo
     }
 
     if (m_keyboardInput.WasPressed(VK_F5)) {
-      m_debugSettings.depthVisualizationEnabled = !m_debugSettings.depthVisualizationEnabled;
+      m_debugSettings.debugViewMode =
+          m_debugSettings.debugViewMode == DebugViewMode::Depth ? DebugViewMode::None : DebugViewMode::Depth;
 
-      LogInfo(m_debugSettings.depthVisualizationEnabled ? "Depth Visualization post effect enabled"
-                                                        : "Depth Visualization post effect disabled.");
+      // TODO: Add LogInfo
     }
 
     const float orbitSpeed = 1.5f * deltaSeconds;
@@ -181,7 +181,8 @@ namespace Engine {
 
     m_postProcessSettings.vignetteAmount = m_debugSettings.vignetteEnabled ? 1.0f : 0.0f;
 
-    m_postProcessSettings.depthVisualizationAmount = m_debugSettings.depthVisualizationEnabled ? 1.0f : 0.0f;
+    m_postProcessSettings.depthVisualizationAmount =
+        m_debugSettings.debugViewMode == DebugViewMode::Depth ? 1.0f : 0.0f;
   }
 
   void Application::Render() {
@@ -201,7 +202,7 @@ namespace Engine {
                       m_camera,
                       m_scene,
                       m_timer.GetTotalSeconds(),
-                      m_debugSettings.normalVisualizationEnabled);
+                      m_debugSettings.debugViewMode == DebugViewMode::Normals);
 
     m_graphicsDevice.SetBackBufferRenderTarget();
 
@@ -209,7 +210,8 @@ namespace Engine {
 
     m_renderStates.Apply(m_graphicsDevice, false);
 
-    m_fullscreenPass.Render(m_graphicsDevice, m_sceneRenderTarget, m_graphicsDevice.GetDepthStencilBuffer(), m_postProcessSettings);
+    m_fullscreenPass.Render(
+        m_graphicsDevice, m_sceneRenderTarget, m_graphicsDevice.GetDepthStencilBuffer(), m_postProcessSettings);
 
     m_debugOverlay.BeginFrame();
 
