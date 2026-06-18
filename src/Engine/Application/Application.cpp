@@ -150,6 +150,12 @@ namespace Engine {
       // TODO: Add LogInfo
     }
 
+    if (m_keyboardInput.WasPressed(VK_F6)) {
+      m_debugSettings.bloomEnabled = !m_debugSettings.bloomEnabled;
+
+      // TODO: Add LogInfo
+    }
+
     const float orbitSpeed = 1.5f * deltaSeconds;
     const float zoomSpeed = 3.0f * deltaSeconds;
 
@@ -215,7 +221,7 @@ namespace Engine {
     m_renderStates.Apply(m_graphicsDevice, false);
 
     m_fullscreenPass.Render(
-        m_graphicsDevice, m_sceneRenderTarget, m_graphicsDevice.GetDepthStencilBuffer(), m_postProcessSettings);
+        m_graphicsDevice, m_sceneRenderTarget, m_graphicsDevice.GetDepthStencilBuffer(), m_postProcessSettings, m_debugSettings);
 
     m_debugOverlay.BeginFrame();
 

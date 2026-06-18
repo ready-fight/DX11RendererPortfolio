@@ -23,6 +23,7 @@ namespace Engine {
     bool wireframeEnabled = false;
     bool grayscaleEnabled = false;
     bool vignetteEnabled = false;
+    bool bloomEnabled = false;
 
     DebugViewMode debugViewMode = DebugViewMode::None;
   };

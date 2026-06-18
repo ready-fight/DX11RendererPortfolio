@@ -1,5 +1,6 @@
 #include "Engine/Renderer/FullscreenPass.h"
 
+#include "Engine/Renderer/DebugSettings.h"
 #include "Engine/Renderer/DepthStencilBuffer.h"
 #include "Engine/Renderer/DxHelpers.h"
 #include "Engine/Renderer/GraphicsDevice.h"
@@ -12,6 +13,8 @@ namespace Engine {
   struct PostProcessConstants {
     DirectX::XMFLOAT4 settings;
     DirectX::XMFLOAT4 debugSettings;
+    DirectX::XMFLOAT4 bloomSettings;
+    DirectX::XMFLOAT4 textureSize;
   };
 
   static_assert(sizeof(PostProcessConstants) % 16 == 0);
@@ -45,15 +48,23 @@ namespace Engine {
   }
 
   void FullscreenPass::Render(GraphicsDevice& graphicsDevice, RenderTarget& sourceTexture,
-                              DepthStencilBuffer& sceneDepth, const PostProcessSettings& settings) {
+                              DepthStencilBuffer& sceneDepth, const PostProcessSettings& settings,
+                              DebugSettings& debugSettings) {
     ID3D11DeviceContext* context = graphicsDevice.GetContext();
 
     PostProcessConstants constants = {};
-    constants.settings =
-        DirectX::XMFLOAT4(settings.grayscaleAmount, settings.exposure, settings.contrast, settings.vignetteAmount);
 
-    constants.debugSettings =
-        DirectX::XMFLOAT4(settings.depthVisualizationAmount, 0.1f, 100.0f, settings.depthVisualizationRange);
+    constants.settings = {settings.grayscaleAmount, settings.exposure, settings.contrast, settings.vignetteAmount};
+
+    constants.debugSettings = {settings.depthVisualizationAmount, 0.1f, 100.0f, settings.depthVisualizationRange};
+
+    constants.bloomSettings =
+        debugSettings.bloomEnabled
+            ? DirectX::XMFLOAT4(settings.bloomAmount, settings.bloomThreshold, settings.bloomRadius, 0.0f)
+            : DirectX::XMFLOAT4(0.0f, settings.bloomThreshold, settings.bloomRadius, 0.0f);
+
+    constants.textureSize = {
+        static_cast<float>(sourceTexture.GetWidth()), static_cast<float>(sourceTexture.GetHeight()), 0.0f, 0.0f};
 
     m_postProcessBuffer.Update(graphicsDevice, &constants, sizeof(constants));
 

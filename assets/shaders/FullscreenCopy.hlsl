@@ -4,6 +4,8 @@ cbuffer PostProcessConstants : register(b0)
 {
     float4 gPostSettings;
     float4 gDebugSettings;
+    float4 gBloomSettings;
+    float4 gTextureSize;
 };
 
 Texture2D gSceneTexture : register(t0);
@@ -21,18 +23,16 @@ VSOutput VSMain(uint vertexId : SV_VertexID)
     VSOutput output;
 
     float2 positions[3] =
-    {
-        float2(-1.0f, -1.0f),
-        float2(-1.0f,  3.0f),
-        float2( 3.0f, -1.0f)
-    };
+        {
+            float2(-1.0f, -1.0f),
+            float2(-1.0f, 3.0f),
+            float2(3.0f, -1.0f)};
 
     float2 texcoords[3] =
-    {
-        float2(0.0f, 1.0f),
-        float2(0.0f, -1.0f),
-        float2(2.0f, 1.0f)
-    };
+        {
+            float2(0.0f, 1.0f),
+            float2(0.0f, -1.0f),
+            float2(2.0f, 1.0f)};
 
     output.position = float4(positions[vertexId], 0.0f, 1.0f);
     output.texcoord = texcoords[vertexId];
@@ -46,7 +46,42 @@ float LinearizeDepth(float depth)
     float farPlane = gDebugSettings.z;
 
     return (nearPlane * farPlane) /
-        max(farPlane - depth * (farPlane - nearPlane), 0.0001f);
+           max(farPlane - depth * (farPlane - nearPlane), 0.0001f);
+}
+
+float3 ExtractBright(float3 color, float threshold)
+{
+    float brightness = max(color.r, max(color.g, color.b));
+    float amount = saturate((brightness - threshold) / max(1.0f - threshold, 0.0001f));
+
+    return color * amount;
+}
+
+float3 SampleBloom(float2 uv)
+{
+    float bloomThreshold = gBloomSettings.y;
+    float bloomRadius = gBloomSettings.z;
+
+    float2 texelSize =
+        1.0f / max(gTextureSize.xy, float2(1.0f, 1.0f));
+
+    float2 offset = texelSize * bloomRadius;
+
+    float3 bloom = 0.0f;
+
+    bloom += ExtractBright(gSceneTexture.Sample(gSceneSampler, uv).rgb, bloomThreshold) * 0.20f;
+
+    bloom += ExtractBright(gSceneTexture.Sample(gSceneSampler, uv + float2(offset.x, 0.0f)).rgb, bloomThreshold) * 0.10f;
+    bloom += ExtractBright(gSceneTexture.Sample(gSceneSampler, uv + float2(-offset.x, 0.0f)).rgb, bloomThreshold) * 0.10f;
+    bloom += ExtractBright(gSceneTexture.Sample(gSceneSampler, uv + float2(0.0f, offset.y)).rgb, bloomThreshold) * 0.10f;
+    bloom += ExtractBright(gSceneTexture.Sample(gSceneSampler, uv + float2(0.0f, -offset.y)).rgb, bloomThreshold) * 0.10f;
+
+    bloom += ExtractBright(gSceneTexture.Sample(gSceneSampler, uv + float2(offset.x, offset.y)).rgb, bloomThreshold) * 0.075f;
+    bloom += ExtractBright(gSceneTexture.Sample(gSceneSampler, uv + float2(-offset.x, offset.y)).rgb, bloomThreshold) * 0.075f;
+    bloom += ExtractBright(gSceneTexture.Sample(gSceneSampler, uv + float2(offset.x, -offset.y)).rgb, bloomThreshold) * 0.075f;
+    bloom += ExtractBright(gSceneTexture.Sample(gSceneSampler, uv + float2(-offset.x, -offset.y)).rgb, bloomThreshold) * 0.075f;
+
+    return bloom;
 }
 
 float4 PSMain(VSOutput input) : SV_TARGET
@@ -59,6 +94,11 @@ float4 PSMain(VSOutput input) : SV_TARGET
     float vignetteAmount = gPostSettings.w;
 
     float3 finalColor = color.rgb;
+
+    float bloomAmount = gBloomSettings.x;
+    float3 bloom = SampleBloom(input.texcoord);
+
+    finalColor += bloom * bloomAmount;
 
     finalColor *= exposure;
 

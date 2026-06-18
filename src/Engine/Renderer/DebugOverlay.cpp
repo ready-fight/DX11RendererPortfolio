@@ -47,7 +47,8 @@ namespace Engine {
   }
 
   void DebugOverlay::Draw(DebugSettings& debugSettings, PostProcessSettings& postProcessSettings,
-                          const RenderStats& renderStats, const RenderResourceManager& renderResources, Scene& scene, float FPS) {
+                          const RenderStats& renderStats, const RenderResourceManager& renderResources, Scene& scene,
+                          float FPS) {
 
     ImGui::Begin("Renderer Debug", nullptr, ImGuiWindowFlags_NoMove);
 
@@ -74,6 +75,11 @@ namespace Engine {
     ImGui::Text("Post Effects");
     ImGui::Checkbox("Grayscale (F2)", &debugSettings.grayscaleEnabled);
     ImGui::Checkbox("Vignette (F3)", &debugSettings.vignetteEnabled);
+    ImGui::Checkbox("Bloom (F6)", &debugSettings.bloomEnabled);
+
+    ImGui::SliderFloat("Bloom Amount", &postProcessSettings.bloomAmount, 0.0f, 3.0f);
+    ImGui::SliderFloat("Bloom Threshold", &postProcessSettings.bloomThreshold, 0.0f, 2.0f);
+    ImGui::SliderFloat("Bloom Radius", &postProcessSettings.bloomRadius, 0.5f, 8.0f);
 
     ImGui::Separator();
 
@@ -85,13 +91,13 @@ namespace Engine {
 
     ImGui::SameLine();
 
-    if (ImGui::Button("Normals")) {
+    if (ImGui::Button("Normals (F4)")) {
       debugSettings.debugViewMode = DebugViewMode::Normals;
     }
 
     ImGui::SameLine();
 
-    if (ImGui::Button("Depth")) {
+    if (ImGui::Button("Depth (F5)")) {
       debugSettings.debugViewMode = DebugViewMode::Depth;
     }
 
