@@ -166,15 +166,15 @@ namespace Engine {
   }
 
   void GraphicsDevice::BeginFrameStats(float deltaSeconds) {
+
+    m_renderStats = RenderStats{};
     m_renderStats.frameTimeMs = deltaSeconds * 1000.0f;
-    m_renderStats.drawCalls = 0;
-    m_renderStats.visibleObjects = 0;
 
     m_fpsAccumulatedTime += deltaSeconds;
     ++m_fpsFrameCount;
 
     if (m_fpsAccumulatedTime >= 0.25f) {
-      m_renderStats.framesPerSecond = static_cast<float>(m_fpsFrameCount) / m_fpsAccumulatedTime;
+      m_fps = static_cast<float>(m_fpsFrameCount) / m_fpsAccumulatedTime;
 
       m_fpsAccumulatedTime = 0.0f;
       m_fpsFrameCount = 0;
@@ -183,14 +183,25 @@ namespace Engine {
 
   void GraphicsDevice::Draw(uint32_t vertexCount, uint32_t startVertexLocation) {
     m_context->Draw(vertexCount, startVertexLocation);
-    ++m_renderStats.drawCalls;
+    RecordDrawCall();
   }
 
   void GraphicsDevice::DrawIndexed(uint32_t indexCount, uint32_t startIndexLocation, int32_t baseVertexLocation) {
     m_context->DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);
-
-    ++m_renderStats.drawCalls;
+    RecordDrawCall();
   }
 
   void GraphicsDevice::AddVisibleObject() { ++m_renderStats.visibleObjects; }
+
+  void GraphicsDevice::BeginRenderPass(RenderPassType renderPassType) { m_activeRenderPass = renderPassType; }
+
+  void GraphicsDevice::RecordDrawCall() {
+    ++m_renderStats.drawCalls;
+
+    const uint32_t passIndex = static_cast<uint32_t>(m_activeRenderPass);
+
+    if (passIndex < RenderPassCount) {
+      ++m_renderStats.renderPasses[passIndex].drawCalls;
+    }
+  }
 }

@@ -189,6 +189,8 @@ namespace Engine {
 
     m_graphicsDevice.BeginFrameStats(m_timer.GetDeltaSeconds());
 
+    m_graphicsDevice.BeginRenderPass(RenderPassType::Scene);
+
     m_graphicsDevice.SetRenderTarget(m_sceneRenderTarget, &m_graphicsDevice.GetDepthStencilBuffer());
 
     m_graphicsDevice.ClearRenderTarget(m_sceneRenderTarget, 0.05f, 0.08f, 0.12f, 1.0f);
@@ -204,6 +206,8 @@ namespace Engine {
                       m_timer.GetTotalSeconds(),
                       m_debugSettings.debugViewMode == DebugViewMode::Normals);
 
+    m_graphicsDevice.BeginRenderPass(RenderPassType::PostProcess);
+
     m_graphicsDevice.SetBackBufferRenderTarget();
 
     m_graphicsDevice.ClearRenderTarget(m_graphicsDevice.GetBackBufferRenderTarget(), 0.0f, 0.0f, 0.0f, 1.0f);
@@ -215,8 +219,12 @@ namespace Engine {
 
     m_debugOverlay.BeginFrame();
 
-    m_debugOverlay.Draw(
-        m_debugSettings, m_postProcessSettings, m_graphicsDevice.GetRenderStats(), m_renderResources, m_scene);
+    m_debugOverlay.Draw(m_debugSettings,
+                        m_postProcessSettings,
+                        m_graphicsDevice.GetRenderStats(),
+                        m_renderResources,
+                        m_scene,
+                        m_graphicsDevice.GetFPS());
 
     m_debugOverlay.EndFrame();
 

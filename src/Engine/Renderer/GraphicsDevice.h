@@ -41,8 +41,13 @@ namespace Engine {
 
     const RenderStats& GetRenderStats() const { return m_renderStats; }
 
+    void BeginRenderPass(RenderPassType renderPassType);
+
+    float GetFPS() { return m_fps; }
+
   private:
     void ReportLiveObjects();
+    void RecordDrawCall();
 
   private:
     Microsoft::WRL::ComPtr<ID3D11Device> m_device;
@@ -52,11 +57,14 @@ namespace Engine {
     RenderTarget m_backBufferRenderTarget;
     DepthStencilBuffer m_depthStencilBuffer;
 
-    RenderStats m_renderStats;
-
     float m_fpsAccumulatedTime = 0.0f;
     uint32_t m_fpsFrameCount = 0;
+    float m_fps = 0;
 
     bool m_debugLayerEnabled = false;
+
+    RenderStats m_renderStats;
+    RenderPassType m_activeRenderPass = RenderPassType::Scene;
+    
   };
 }

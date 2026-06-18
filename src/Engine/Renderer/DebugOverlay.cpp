@@ -47,15 +47,22 @@ namespace Engine {
   }
 
   void DebugOverlay::Draw(DebugSettings& debugSettings, PostProcessSettings& postProcessSettings,
-                          const RenderStats& renderStats, const RenderResourceManager& renderResources, Scene& scene) {
+                          const RenderStats& renderStats, const RenderResourceManager& renderResources, Scene& scene, float FPS) {
 
     ImGui::Begin("Renderer Debug", nullptr, ImGuiWindowFlags_NoMove);
 
-    ImGui::Text("Frame Stats");
-    ImGui::Text("FPS: %.1f", renderStats.framesPerSecond);
-    ImGui::Text("Frame Time: %.2f ms", renderStats.frameTimeMs);
-    ImGui::Text("Draw Calls: %u", renderStats.drawCalls);
-    ImGui::Text("Visible Objects: %u", renderStats.visibleObjects);
+    if (ImGui::CollapsingHeader("Render Stats", ImGuiTreeNodeFlags_DefaultOpen)) {
+      ImGui::Text("FPS: %.1f", FPS);
+      ImGui::Text("Frame Time: %.3f ms", renderStats.frameTimeMs);
+      ImGui::Text("Total Draw Calls: %u", renderStats.drawCalls);
+      ImGui::Text("Visible Objects: %u", renderStats.visibleObjects);
+
+      ImGui::SeparatorText("Render Passes");
+
+      for (const RenderPassStats& passStats : renderStats.renderPasses) {
+        ImGui::Text("%s: %u draw calls", passStats.name, passStats.drawCalls);
+      }
+    }
 
     ImGui::Separator();
 

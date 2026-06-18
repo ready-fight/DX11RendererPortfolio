@@ -20,8 +20,7 @@ namespace Engine {
 
     void BeginFrame();
     void Draw(DebugSettings& debugSettings, PostProcessSettings& postProcessSettings, const RenderStats& renderStats,
-              const RenderResourceManager& renderResources, Scene& scene);
-    ;
+              const RenderResourceManager& renderResources, Scene& scene, float FPS);
     void EndFrame();
   };
 }
