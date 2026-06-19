@@ -38,7 +38,7 @@ namespace Engine {
     }
 
     if (!m_sceneRenderTarget.InitializeColor(
-            m_graphicsDevice, m_window.GetWidth(), m_window.GetHeight(), DXGI_FORMAT_R8G8B8A8_UNORM)) {
+            m_graphicsDevice, m_window.GetWidth(), m_window.GetHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT)) {
       MessageBoxW(nullptr, L"Failed to initialize scene render target.", L"Error", MB_OK);
       return false;
     }

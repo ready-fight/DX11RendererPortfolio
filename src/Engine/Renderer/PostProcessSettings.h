@@ -14,5 +14,7 @@ namespace Engine {
     float bloomAmount = 0.0f;
     float bloomThreshold = 0.85f;
     float bloomRadius = 2.0f;
+
+    float toneMappingAmount = 1.0f;
   };
 }

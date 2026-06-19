@@ -60,8 +60,9 @@ namespace Engine {
 
     constants.bloomSettings =
         debugSettings.bloomEnabled
-            ? DirectX::XMFLOAT4(settings.bloomAmount, settings.bloomThreshold, settings.bloomRadius, 0.0f)
-            : DirectX::XMFLOAT4(0.0f, settings.bloomThreshold, settings.bloomRadius, 0.0f);
+            ? DirectX::XMFLOAT4(
+                  settings.bloomAmount, settings.bloomThreshold, settings.bloomRadius, settings.toneMappingAmount)
+            : DirectX::XMFLOAT4(0.0f, settings.bloomThreshold, settings.bloomRadius, settings.toneMappingAmount);
 
     constants.textureSize = {
         static_cast<float>(sourceTexture.GetWidth()), static_cast<float>(sourceTexture.GetHeight()), 0.0f, 0.0f};

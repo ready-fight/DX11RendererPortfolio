@@ -124,7 +124,7 @@ namespace Engine {
       return false;
     }
 
-    m_modelMeshHandle = CreateModelMesh(graphicsDevice, "assets/models/cat.obj", "Pyramid Mesh");
+    m_modelMeshHandle = CreateModelMesh(graphicsDevice, "assets/models/pyramid.obj", "Pyramid Mesh");
 
     if (!m_modelMeshHandle.IsValid()) {
       LogWarning("Failed to create model mesh. Falling back to cube mesh.");

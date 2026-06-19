@@ -78,8 +78,9 @@ namespace Engine {
     ImGui::Checkbox("Bloom (F6)", &debugSettings.bloomEnabled);
 
     ImGui::SliderFloat("Bloom Amount", &postProcessSettings.bloomAmount, 0.0f, 3.0f);
-    ImGui::SliderFloat("Bloom Threshold", &postProcessSettings.bloomThreshold, 0.0f, 2.0f);
+    ImGui::SliderFloat("Bloom Threshold", &postProcessSettings.bloomThreshold, 0.0f, 5.0f);
     ImGui::SliderFloat("Bloom Radius", &postProcessSettings.bloomRadius, 0.5f, 8.0f);
+    ImGui::SliderFloat("Tone Mapping Amount", &postProcessSettings.toneMappingAmount, 0.0f, 1.0f);
 
     ImGui::Separator();
 

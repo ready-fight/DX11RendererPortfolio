@@ -102,6 +102,14 @@ float4 PSMain(VSOutput input) : SV_TARGET
 
     finalColor *= exposure;
 
+    float toneMappingAmount = gBloomSettings.w;
+
+    float3 toneMappedColor =
+        finalColor / (finalColor + 1.0f.xxx);
+
+    finalColor =
+        lerp(finalColor, toneMappedColor, toneMappingAmount);
+
     finalColor = ((finalColor - 0.5f) * contrast) + 0.5f;
 
     float grayscale =

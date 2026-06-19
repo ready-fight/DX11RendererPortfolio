@@ -13,7 +13,7 @@ namespace Engine {
   public:
     bool InitializeFromBackBuffer(GraphicsDevice& graphicsDevice);
 
-    bool InitializeColor(GraphicsDevice& graphicsDevice, uint32_t width, uint32_t height, DXGI_FORMAT format);
+    bool InitializeColor(GraphicsDevice& graphicsDevice, uint32_t width, uint32_t height, DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM);
 
     void Shutdown();
 
