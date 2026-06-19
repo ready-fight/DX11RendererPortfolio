@@ -8,6 +8,7 @@ cbuffer MaterialConstants : register(b1)
 {
     float4 gBaseColor;
     float4 gSpecular;
+    float4 gEmissive;
 };
 
 struct VSInput

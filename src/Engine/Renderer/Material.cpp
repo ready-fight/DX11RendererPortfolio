@@ -28,6 +28,7 @@ namespace Engine {
     struct MaterialConstants {
       DirectX::XMFLOAT4 baseColor;
       DirectX::XMFLOAT4 specular;
+      DirectX::XMFLOAT4 emissive;
     };
 
     static_assert(sizeof(MaterialConstants) % 16 == 0);
@@ -59,6 +60,10 @@ namespace Engine {
     MaterialConstants constants = {};
     constants.baseColor = materialInstance.baseColor;
     constants.specular = {materialInstance.specularStrength, materialInstance.specularPower, 0.0f, 0.0f};
+    constants.emissive = {materialInstance.emissiveColor.x * materialInstance.emissiveStrength,
+                          materialInstance.emissiveColor.y * materialInstance.emissiveStrength,
+                          materialInstance.emissiveColor.z * materialInstance.emissiveStrength,
+                          0.0f};
 
     m_materialBuffer.Update(graphicsDevice, &constants, sizeof(constants));
 

@@ -11,5 +11,8 @@ namespace Engine {
 
     float specularStrength = 0.35f;
     float specularPower = 32.0f;
+
+    DirectX::XMFLOAT3 emissiveColor = {1.0f, 1.0f, 1.0f};
+    float emissiveStrength = 0.0f;
   };
 }
