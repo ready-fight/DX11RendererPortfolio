@@ -24,6 +24,7 @@ namespace Engine {
     bool grayscaleEnabled = false;
     bool vignetteEnabled = false;
     bool bloomEnabled = false;
+    bool particlesEnabled = true;
 
     DebugViewMode debugViewMode = DebugViewMode::None;
   };

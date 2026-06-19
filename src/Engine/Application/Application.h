@@ -16,6 +16,8 @@
 #include "Engine/Scene/Scene.h"
 #include "Engine/Renderer/RenderResourceManager.h"
 
+#include "Engine/Renderer/ParticlePass.h"
+
 namespace Engine {
   class Application final {
   public:
@@ -37,6 +39,7 @@ namespace Engine {
 
     RenderTarget m_sceneRenderTarget;
     FullscreenPass m_fullscreenPass;
+    ParticlePass m_particlePass;
     DebugOverlay m_debugOverlay;
     PostProcessSettings m_postProcessSettings;
     KeyboardInput m_keyboardInput;

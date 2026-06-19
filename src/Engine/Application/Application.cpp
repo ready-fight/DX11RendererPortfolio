@@ -67,6 +67,10 @@ namespace Engine {
       return false;
     }
 
+    if (!m_particlePass.Initialize(m_graphicsDevice)) {
+      return false;
+    }
+
     BuildTestScene();
 
     m_isRunning = true;
@@ -88,6 +92,7 @@ namespace Engine {
 
     m_debugOverlay.Shutdown();
     m_fullscreenPass.Shutdown();
+    m_particlePass.Shutdown();
     m_sceneRenderTarget.Shutdown();
     m_renderStates.Shutdown();
     m_graphicsDevice.Shutdown();
@@ -156,6 +161,12 @@ namespace Engine {
       // TODO: Add LogInfo
     }
 
+    if (m_keyboardInput.WasPressed(VK_F7)) {
+      m_debugSettings.particlesEnabled = !m_debugSettings.particlesEnabled;
+
+      // TODO: Add LogInfo
+    }
+
     const float orbitSpeed = 1.5f * deltaSeconds;
     const float zoomSpeed = 3.0f * deltaSeconds;
 
@@ -212,6 +223,12 @@ namespace Engine {
                       m_timer.GetTotalSeconds(),
                       m_debugSettings.debugViewMode == DebugViewMode::Normals);
 
+    if (m_debugSettings.particlesEnabled && m_debugSettings.debugViewMode != DebugViewMode::Normals) {
+      m_renderStates.Apply(m_graphicsDevice, false, BlendMode::Additive);
+
+      m_particlePass.Render(m_graphicsDevice, m_camera, m_timer.GetTotalSeconds());
+    }
+
     m_graphicsDevice.BeginRenderPass(RenderPassType::PostProcess);
 
     m_graphicsDevice.SetBackBufferRenderTarget();
@@ -220,8 +237,11 @@ namespace Engine {
 
     m_renderStates.Apply(m_graphicsDevice, false, BlendMode::Opaque);
 
-    m_fullscreenPass.Render(
-        m_graphicsDevice, m_sceneRenderTarget, m_graphicsDevice.GetDepthStencilBuffer(), m_postProcessSettings, m_debugSettings);
+    m_fullscreenPass.Render(m_graphicsDevice,
+                            m_sceneRenderTarget,
+                            m_graphicsDevice.GetDepthStencilBuffer(),
+                            m_postProcessSettings,
+                            m_debugSettings);
 
     m_debugOverlay.BeginFrame();
 

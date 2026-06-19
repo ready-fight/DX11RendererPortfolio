@@ -104,6 +104,8 @@ namespace Engine {
 
     ImGui::SliderFloat("Depth Visualization Range", &postProcessSettings.depthVisualizationRange, 1.0f, 100.0f);
 
+    ImGui::Checkbox("Particles (F7)", &debugSettings.particlesEnabled);
+
     ImGui::Separator();
 
     ImGui::SliderFloat("Exposure", &postProcessSettings.exposure, 0.1f, 3.0f);
