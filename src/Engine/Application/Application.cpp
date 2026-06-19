@@ -203,7 +203,7 @@ namespace Engine {
 
     m_graphicsDevice.ClearDepthStencil(m_graphicsDevice.GetDepthStencilBuffer());
 
-    m_renderStates.Apply(m_graphicsDevice, m_debugSettings.wireframeEnabled);
+    m_renderStates.Apply(m_graphicsDevice, m_debugSettings.wireframeEnabled, BlendMode::Opaque);
 
     m_meshPass.Render(m_graphicsDevice,
                       m_renderResources,
@@ -218,7 +218,7 @@ namespace Engine {
 
     m_graphicsDevice.ClearRenderTarget(m_graphicsDevice.GetBackBufferRenderTarget(), 0.0f, 0.0f, 0.0f, 1.0f);
 
-    m_renderStates.Apply(m_graphicsDevice, false);
+    m_renderStates.Apply(m_graphicsDevice, false, BlendMode::Opaque);
 
     m_fullscreenPass.Render(
         m_graphicsDevice, m_sceneRenderTarget, m_graphicsDevice.GetDepthStencilBuffer(), m_postProcessSettings, m_debugSettings);

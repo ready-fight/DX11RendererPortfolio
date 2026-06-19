@@ -45,21 +45,92 @@ namespace Engine {
       return false;
     }
 
+    D3D11_BLEND_DESC opaqueBlendDesc = {};
+    opaqueBlendDesc.RenderTarget[0].BlendEnable = FALSE;
+    opaqueBlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+    hr = graphicsDevice.GetDevice()->CreateBlendState(&opaqueBlendDesc, m_opaqueBlendState.GetAddressOf());
+
+    if (!DX_CHECK(hr)) {
+      return false;
+    }
+
+    D3D11_BLEND_DESC alphaBlendDesc = {};
+    alphaBlendDesc.RenderTarget[0].BlendEnable = TRUE;
+    alphaBlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+    alphaBlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+    alphaBlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+    alphaBlendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+    alphaBlendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+    alphaBlendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+    alphaBlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+    hr = graphicsDevice.GetDevice()->CreateBlendState(&alphaBlendDesc, m_alphaBlendState.GetAddressOf());
+
+    if (!DX_CHECK(hr)) {
+      return false;
+    }
+
+    D3D11_BLEND_DESC additiveBlendDesc = {};
+    additiveBlendDesc.RenderTarget[0].BlendEnable = TRUE;
+    additiveBlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+    additiveBlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+    additiveBlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+    additiveBlendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+    additiveBlendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+    additiveBlendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+    additiveBlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+    hr = graphicsDevice.GetDevice()->CreateBlendState(&additiveBlendDesc, m_additiveBlendState.GetAddressOf());
+
+    if (!DX_CHECK(hr)) {
+      return false;
+    }
+
     LogInfo("Render states initialized.");
     return true;
   }
 
   void RenderStates::Shutdown() {
+    m_additiveBlendState.Reset();
+    m_alphaBlendState.Reset();
+    m_opaqueBlendState.Reset();
+
     m_depthEnabledState.Reset();
+
     m_wireframeRasterizerState.Reset();
     m_solidRasterizerState.Reset();
   }
 
-  void RenderStates::Apply(GraphicsDevice& graphicsDevice, bool wireframeEnabled) {
+  void RenderStates::Apply(GraphicsDevice& graphicsDevice, bool wireframeEnabled, BlendMode blendMode) {
     ID3D11DeviceContext* context = graphicsDevice.GetContext();
 
     context->RSSetState(wireframeEnabled ? m_wireframeRasterizerState.Get() : m_solidRasterizerState.Get());
 
     context->OMSetDepthStencilState(m_depthEnabledState.Get(), 0);
+
+    ID3D11BlendState* blendState = m_opaqueBlendState.Get();
+
+    switch (blendMode) {
+      case BlendMode::Opaque:
+        blendState = m_opaqueBlendState.Get();
+        break;
+
+      case BlendMode::Alpha:
+        blendState = m_alphaBlendState.Get();
+        break;
+
+      case BlendMode::Additive:
+        blendState = m_additiveBlendState.Get();
+        break;
+
+      default:
+        blendState = m_opaqueBlendState.Get();
+        break;
+    }
+
+    const float blendFactor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+
+    graphicsDevice.GetContext()->OMSetBlendState(blendState, blendFactor, 0xffffffff);
   }
 }
