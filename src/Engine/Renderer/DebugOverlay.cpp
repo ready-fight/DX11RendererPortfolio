@@ -49,8 +49,7 @@ namespace Engine {
   void DebugOverlay::Draw(DebugSettings& debugSettings, PostProcessSettings& postProcessSettings,
                           const RenderStats& renderStats, const RenderResourceManager& renderResources, Scene& scene,
                           float FPS) {
-
-    ImGui::Begin("Renderer Debug", nullptr, ImGuiWindowFlags_NoMove);
+    ImGui::Begin("Renderer Debug");
 
     if (ImGui::CollapsingHeader("Render Stats", ImGuiTreeNodeFlags_DefaultOpen)) {
       ImGui::Text("FPS: %.1f", FPS);
@@ -69,18 +68,6 @@ namespace Engine {
 
     ImGui::Text("Render States");
     ImGui::Checkbox("Wireframe (F1)", &debugSettings.wireframeEnabled);
-
-    ImGui::Separator();
-
-    ImGui::Text("Post Effects");
-    ImGui::Checkbox("Grayscale (F2)", &debugSettings.grayscaleEnabled);
-    ImGui::Checkbox("Vignette (F3)", &debugSettings.vignetteEnabled);
-    ImGui::Checkbox("Bloom (F6)", &debugSettings.bloomEnabled);
-
-    ImGui::SliderFloat("Bloom Amount", &postProcessSettings.bloomAmount, 0.0f, 3.0f);
-    ImGui::SliderFloat("Bloom Threshold", &postProcessSettings.bloomThreshold, 0.0f, 5.0f);
-    ImGui::SliderFloat("Bloom Radius", &postProcessSettings.bloomRadius, 0.5f, 8.0f);
-    ImGui::SliderFloat("Tone Mapping Amount", &postProcessSettings.toneMappingAmount, 0.0f, 1.0f);
 
     ImGui::Separator();
 
@@ -104,38 +91,42 @@ namespace Engine {
 
     ImGui::SliderFloat("Depth Visualization Range", &postProcessSettings.depthVisualizationRange, 1.0f, 100.0f);
 
-    if (ImGui::CollapsingHeader("Particles / VFX", ImGuiTreeNodeFlags_DefaultOpen)) {
-      ParticleSystemSettings& particles = scene.GetParticleSystemSettings();
+    ImGui::Separator();
 
-      ImGui::Checkbox("Particles (F7)", &debugSettings.particlesEnabled);
+    ImGui::Text("Post Effects");
+    ImGui::Checkbox("Grayscale (F2)", &debugSettings.grayscaleEnabled);
+    ImGui::Checkbox("Vignette (F3)", &debugSettings.vignetteEnabled);
+    ImGui::Checkbox("Bloom (F6)", &debugSettings.bloomEnabled);
 
-      ImGui::SliderInt("Particle Count", &particles.particleCount, 0, 64);
-
-      ImGui::ColorEdit4("Particle Color", &particles.color.x);
-
-      ImGui::SliderFloat("Orbit Radius", &particles.orbitRadius, 0.0f, 5.0f);
-
-      ImGui::SliderFloat("Orbit Speed", &particles.orbitSpeed, 0.0f, 5.0f);
-
-      ImGui::SliderFloat("Vertical Offset", &particles.verticalOffset, -2.0f, 2.0f);
-
-      ImGui::SliderFloat("Vertical Amplitude", &particles.verticalAmplitude, 0.0f, 2.0f);
-
-      ImGui::SliderFloat("Base Size", &particles.baseSize, 0.01f, 0.5f);
-
-      ImGui::SliderFloat("Size Pulse", &particles.sizePulseAmount, 0.0f, 0.25f);
-    }
+    ImGui::SliderFloat("Bloom Amount", &postProcessSettings.bloomAmount, 0.0f, 3.0f);
+    ImGui::SliderFloat("Bloom Threshold", &postProcessSettings.bloomThreshold, 0.0f, 5.0f);
+    ImGui::SliderFloat("Bloom Radius", &postProcessSettings.bloomRadius, 0.5f, 8.0f);
+    ImGui::SliderFloat("Tone Mapping Amount", &postProcessSettings.toneMappingAmount, 0.0f, 1.0f);
 
     ImGui::Separator();
 
     ImGui::SliderFloat("Exposure", &postProcessSettings.exposure, 0.1f, 3.0f);
     ImGui::SliderFloat("Contrast", &postProcessSettings.contrast, 0.1f, 3.0f);
 
+    if (ImGui::CollapsingHeader("Particles / VFX", ImGuiTreeNodeFlags_DefaultOpen)) {
+      ParticleSystemSettings& particles = scene.GetParticleSystemSettings();
+
+      ImGui::Checkbox("Particles (F7)", &debugSettings.particlesEnabled);
+
+      ImGui::SliderInt("Particle Count", &particles.particleCount, 0, 64);
+      ImGui::ColorEdit4("Particle Color", &particles.color.x);
+
+      ImGui::SliderFloat("Orbit Radius", &particles.orbitRadius, 0.0f, 5.0f);
+      ImGui::SliderFloat("Orbit Speed", &particles.orbitSpeed, 0.0f, 5.0f);
+
+      ImGui::SliderFloat("Vertical Offset", &particles.verticalOffset, -2.0f, 2.0f);
+      ImGui::SliderFloat("Vertical Amplitude", &particles.verticalAmplitude, 0.0f, 2.0f);
+
+      ImGui::SliderFloat("Base Size", &particles.baseSize, 0.01f, 0.5f);
+      ImGui::SliderFloat("Size Pulse", &particles.sizePulseAmount, 0.0f, 0.25f);
+    }
+
     ImGui::Separator();
-
-    ImGui::Text("Scene Objects");
-
-    std::vector<SceneObject>& sceneObjects = scene.GetObjects();
 
     if (ImGui::CollapsingHeader("Lighting", ImGuiTreeNodeFlags_DefaultOpen)) {
       DirectionalLight& light = scene.GetDirectionalLight();
@@ -143,36 +134,33 @@ namespace Engine {
       ImGui::DragFloat3("Light Direction", &light.direction.x, 0.05f, -1.0f, 1.0f);
 
       ImGui::ColorEdit3("Light Color", &light.color.x);
-
       ImGui::SliderFloat("Light Intensity", &light.intensity, 0.0f, 5.0f);
 
       ImGui::ColorEdit3("Ambient Color", &light.ambientColor.x);
-
       ImGui::SliderFloat("Ambient Intensity", &light.ambientIntensity, 0.0f, 1.0f);
     }
+
+    ImGui::Text("Scene Objects");
+
+    std::vector<SceneObject>& sceneObjects = scene.GetObjects();
 
     for (SceneObject& object : sceneObjects) {
       ImGui::PushID(object.name.c_str());
 
       if (ImGui::TreeNode(object.name.c_str())) {
-
         const MaterialHandle materialHandle = object.materialInstance.material;
         const MaterialShaderType shaderType = renderResources.GetMaterialShaderType(materialHandle);
-
-        ImGui::Text("Current Material: %s", renderResources.GetMaterialDebugName(materialHandle));
-
-        ImGui::Text("Shader Type: %s", ToString(shaderType));
-
         const TextureHandle textureHandle = renderResources.GetMaterialBaseTexture(materialHandle);
 
-        ImGui::Text("Texture: %s", renderResources.GetTextureDebugName(textureHandle));
+        ImGui::Text("Current Material: %s", renderResources.GetMaterialDebugName(materialHandle));
+        ImGui::Text("Shader Type: %s", ToString(shaderType));
 
+        ImGui::Text("Texture: %s", renderResources.GetTextureDebugName(textureHandle));
         ImGui::Text("Texture Size: %u x %u",
                     renderResources.GetTextureWidth(textureHandle),
                     renderResources.GetTextureHeight(textureHandle));
 
         const uint32_t materialCount = renderResources.GetMaterialCount();
-
         const char* currentMaterialName = renderResources.GetMaterialDebugName(materialHandle);
 
         if (ImGui::BeginCombo("Material", currentMaterialName)) {
@@ -180,7 +168,6 @@ namespace Engine {
             MaterialHandle candidateHandle = renderResources.GetMaterialHandleAt(materialIndex);
 
             const bool isSelected = candidateHandle.value == object.materialInstance.material.value;
-
             const char* candidateName = renderResources.GetMaterialDebugName(candidateHandle);
 
             if (ImGui::Selectable(candidateName, isSelected)) {
@@ -198,13 +185,10 @@ namespace Engine {
         const MeshHandle meshHandle = object.mesh;
 
         ImGui::Text("Mesh: %s", renderResources.GetMeshDebugName(meshHandle));
-
         ImGui::Text("Mesh Vertices: %u", renderResources.GetMeshVertexCount(meshHandle));
-
         ImGui::Text("Mesh Indices: %u", renderResources.GetMeshIndexCount(meshHandle));
 
         const uint32_t meshCount = renderResources.GetMeshCount();
-
         const char* currentMeshName = renderResources.GetMeshDebugName(meshHandle);
 
         if (ImGui::BeginCombo("Mesh", currentMeshName)) {
@@ -212,7 +196,6 @@ namespace Engine {
             MeshHandle candidateHandle = renderResources.GetMeshHandleAt(meshIndex);
 
             const bool isSelected = candidateHandle.value == object.mesh.value;
-
             const char* candidateName = renderResources.GetMeshDebugName(candidateHandle);
 
             if (ImGui::Selectable(candidateName, isSelected)) {
@@ -234,21 +217,53 @@ namespace Engine {
         ImGui::ColorEdit4("Base Color", &object.materialInstance.baseColor.x);
 
         ImGui::SliderFloat("Specular Strength", &object.materialInstance.specularStrength, 0.0f, 2.0f);
-
         ImGui::SliderFloat("Specular Power", &object.materialInstance.specularPower, 1.0f, 128.0f);
 
         ImGui::ColorEdit3("Emissive Color", &object.materialInstance.emissiveColor.x);
-
         ImGui::SliderFloat("Emissive Strength", &object.materialInstance.emissiveStrength, 0.0f, 10.0f);
 
         ImGui::DragFloat3("Position", &object.transform.position.x, 0.05f);
-
         ImGui::DragFloat3("Scale", &object.transform.scale.x, 0.05f, 0.1f, 5.0f);
 
         ImGui::TreePop();
       }
 
       ImGui::PopID();
+    }
+
+    ImGui::Separator();
+
+    ImGui::Checkbox("Portfolio Info (F8)", &debugSettings.portfolioInfoEnabled);
+
+    if (debugSettings.portfolioInfoEnabled &&
+        ImGui::CollapsingHeader("Portfolio Summary", ImGuiTreeNodeFlags_DefaultOpen)) {
+      ImGui::TextWrapped("DX11 Graphics Portfolio Renderer");
+
+      ImGui::SeparatorText("Core Renderer Features");
+
+      ImGui::BulletText("DirectX 11 device, swap chain, depth buffer, debug layer");
+      ImGui::BulletText("Scene objects with transforms, mesh handles, material handles");
+      ImGui::BulletText("Resource manager for meshes, materials, and textures");
+      ImGui::BulletText("OBJ model loading with generated normals fallback");
+      ImGui::BulletText("Lit, unlit, and normal visualization materials");
+      ImGui::BulletText("Directional lighting with diffuse and specular shading");
+      ImGui::BulletText("HDR scene render target with tone mapping");
+      ImGui::BulletText("Post-processing: grayscale, vignette, bloom, depth view");
+      ImGui::BulletText("Additive particle VFX with runtime controls");
+      ImGui::BulletText("Runtime ImGui editing for scene, lighting, materials, meshes, and VFX");
+
+      ImGui::SeparatorText("Controls");
+
+      ImGui::Text("Arrow Keys: Orbit Camera");
+      ImGui::Text("Q / E: Zoom Camera");
+      ImGui::Text("F1: Wireframe");
+      ImGui::Text("F2: Grayscale");
+      ImGui::Text("F3: Vignette");
+      ImGui::Text("F4: Normal Debug View");
+      ImGui::Text("F5: Depth Debug View");
+      ImGui::Text("F6: Bloom");
+      ImGui::Text("F7: Particles");
+      ImGui::Text("F8: Portfolio Info");
     }
 
     ImGui::End();

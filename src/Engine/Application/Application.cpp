@@ -167,6 +167,10 @@ namespace Engine {
       // TODO: Add LogInfo
     }
 
+    if (m_keyboardInput.WasPressed(VK_F8)) {
+      m_debugSettings.portfolioInfoEnabled = !m_debugSettings.portfolioInfoEnabled;
+    }
+
     const float orbitSpeed = 1.5f * deltaSeconds;
     const float zoomSpeed = 3.0f * deltaSeconds;
 

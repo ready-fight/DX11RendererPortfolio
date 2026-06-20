@@ -23,8 +23,9 @@ namespace Engine {
     bool wireframeEnabled = false;
     bool grayscaleEnabled = false;
     bool vignetteEnabled = false;
-    bool bloomEnabled = false;
+    bool bloomEnabled = true;
     bool particlesEnabled = true;
+    bool portfolioInfoEnabled = true;
 
     DebugViewMode debugViewMode = DebugViewMode::None;
   };
