@@ -226,7 +226,7 @@ namespace Engine {
     if (m_debugSettings.particlesEnabled && m_debugSettings.debugViewMode != DebugViewMode::Normals) {
       m_renderStates.Apply(m_graphicsDevice, false, BlendMode::Additive);
 
-      m_particlePass.Render(m_graphicsDevice, m_camera, m_timer.GetTotalSeconds());
+      m_particlePass.Render(m_graphicsDevice, m_camera, m_scene.GetParticleSystemSettings(), m_timer.GetTotalSeconds());
     }
 
     m_graphicsDevice.BeginRenderPass(RenderPassType::PostProcess);

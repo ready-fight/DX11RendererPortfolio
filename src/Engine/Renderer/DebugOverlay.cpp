@@ -104,7 +104,27 @@ namespace Engine {
 
     ImGui::SliderFloat("Depth Visualization Range", &postProcessSettings.depthVisualizationRange, 1.0f, 100.0f);
 
-    ImGui::Checkbox("Particles (F7)", &debugSettings.particlesEnabled);
+    if (ImGui::CollapsingHeader("Particles / VFX", ImGuiTreeNodeFlags_DefaultOpen)) {
+      ParticleSystemSettings& particles = scene.GetParticleSystemSettings();
+
+      ImGui::Checkbox("Particles (F7)", &debugSettings.particlesEnabled);
+
+      ImGui::SliderInt("Particle Count", &particles.particleCount, 0, 64);
+
+      ImGui::ColorEdit4("Particle Color", &particles.color.x);
+
+      ImGui::SliderFloat("Orbit Radius", &particles.orbitRadius, 0.0f, 5.0f);
+
+      ImGui::SliderFloat("Orbit Speed", &particles.orbitSpeed, 0.0f, 5.0f);
+
+      ImGui::SliderFloat("Vertical Offset", &particles.verticalOffset, -2.0f, 2.0f);
+
+      ImGui::SliderFloat("Vertical Amplitude", &particles.verticalAmplitude, 0.0f, 2.0f);
+
+      ImGui::SliderFloat("Base Size", &particles.baseSize, 0.01f, 0.5f);
+
+      ImGui::SliderFloat("Size Pulse", &particles.sizePulseAmount, 0.0f, 0.25f);
+    }
 
     ImGui::Separator();
 

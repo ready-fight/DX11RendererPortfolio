@@ -67,6 +67,7 @@ add_executable(RenderSandbox WIN32
     Engine/Scene/DirectionalLight.h
     Engine/Renderer/ParticlePass.h
     Engine/Renderer/ParticlePass.cpp
+    Engine/Scene/ParticleSystemSettings.h
 )
 
 target_include_directories(RenderSandbox PRIVATE
