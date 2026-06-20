@@ -11,8 +11,8 @@ namespace Engine {
     float depthVisualizationAmount = 0.0f;
     float depthVisualizationRange = 20.0f;
 
-    float bloomAmount = 0.0f;
-    float bloomThreshold = 0.85f;
+    float bloomAmount = 1.0f;
+    float bloomThreshold = 0.0f;
     float bloomRadius = 2.0f;
 
     float toneMappingAmount = 1.0f;

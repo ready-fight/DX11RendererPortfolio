@@ -51,6 +51,41 @@ namespace Engine {
                           float FPS) {
     ImGui::Begin("Renderer Debug");
 
+    ImGui::Checkbox("Portfolio Info (F8)", &debugSettings.portfolioInfoEnabled);
+
+    if (debugSettings.portfolioInfoEnabled &&
+        ImGui::CollapsingHeader("Portfolio Summary", ImGuiTreeNodeFlags_DefaultOpen)) {
+      ImGui::TextWrapped("DX11 Graphics Portfolio Renderer");
+
+      ImGui::SeparatorText("Core Renderer Features");
+
+      ImGui::BulletText("DirectX 11 device, swap chain, depth buffer, debug layer");
+      ImGui::BulletText("Scene objects with transforms, mesh handles, material handles");
+      ImGui::BulletText("Resource manager for meshes, materials, and textures");
+      ImGui::BulletText("OBJ model loading with generated normals fallback");
+      ImGui::BulletText("Lit, unlit, and normal visualization materials");
+      ImGui::BulletText("Directional lighting with diffuse and specular shading");
+      ImGui::BulletText("HDR scene render target with tone mapping");
+      ImGui::BulletText("Post-processing: grayscale, vignette, bloom, depth view");
+      ImGui::BulletText("Additive particle VFX with runtime controls");
+      ImGui::BulletText("Runtime ImGui editing for scene, lighting, materials, meshes, and VFX");
+
+      ImGui::SeparatorText("Controls");
+
+      ImGui::Text("Arrow Keys: Orbit Camera");
+      ImGui::Text("Q / E: Zoom Camera");
+      ImGui::Text("F1: Wireframe");
+      ImGui::Text("F2: Grayscale");
+      ImGui::Text("F3: Vignette");
+      ImGui::Text("F4: Normal Debug View");
+      ImGui::Text("F5: Depth Debug View");
+      ImGui::Text("F6: Bloom");
+      ImGui::Text("F7: Particles");
+      ImGui::Text("F8: Portfolio Info");
+    }
+
+    ImGui::Separator();
+
     if (ImGui::CollapsingHeader("Render Stats", ImGuiTreeNodeFlags_DefaultOpen)) {
       ImGui::Text("FPS: %.1f", FPS);
       ImGui::Text("Frame Time: %.3f ms", renderStats.frameTimeMs);
@@ -229,41 +264,6 @@ namespace Engine {
       }
 
       ImGui::PopID();
-    }
-
-    ImGui::Separator();
-
-    ImGui::Checkbox("Portfolio Info (F8)", &debugSettings.portfolioInfoEnabled);
-
-    if (debugSettings.portfolioInfoEnabled &&
-        ImGui::CollapsingHeader("Portfolio Summary", ImGuiTreeNodeFlags_DefaultOpen)) {
-      ImGui::TextWrapped("DX11 Graphics Portfolio Renderer");
-
-      ImGui::SeparatorText("Core Renderer Features");
-
-      ImGui::BulletText("DirectX 11 device, swap chain, depth buffer, debug layer");
-      ImGui::BulletText("Scene objects with transforms, mesh handles, material handles");
-      ImGui::BulletText("Resource manager for meshes, materials, and textures");
-      ImGui::BulletText("OBJ model loading with generated normals fallback");
-      ImGui::BulletText("Lit, unlit, and normal visualization materials");
-      ImGui::BulletText("Directional lighting with diffuse and specular shading");
-      ImGui::BulletText("HDR scene render target with tone mapping");
-      ImGui::BulletText("Post-processing: grayscale, vignette, bloom, depth view");
-      ImGui::BulletText("Additive particle VFX with runtime controls");
-      ImGui::BulletText("Runtime ImGui editing for scene, lighting, materials, meshes, and VFX");
-
-      ImGui::SeparatorText("Controls");
-
-      ImGui::Text("Arrow Keys: Orbit Camera");
-      ImGui::Text("Q / E: Zoom Camera");
-      ImGui::Text("F1: Wireframe");
-      ImGui::Text("F2: Grayscale");
-      ImGui::Text("F3: Vignette");
-      ImGui::Text("F4: Normal Debug View");
-      ImGui::Text("F5: Depth Debug View");
-      ImGui::Text("F6: Bloom");
-      ImGui::Text("F7: Particles");
-      ImGui::Text("F8: Portfolio Info");
     }
 
     ImGui::End();
